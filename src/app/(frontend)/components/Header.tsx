@@ -182,7 +182,7 @@ export default function Header({ data }: HeaderProps) {
 
             {data.navItems && data.navItems.length > 0 && (
               <div className={`mt-[calc(var(--spacing)*5)] flex w-full items-center ${navAlignWrapperClass}`}>
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-5 overflow-x-auto">
                   {(data.navItems || []).map((item) => {
                     const hasChildren = item.children && item.children.length > 0
                     const active = hasChildren
@@ -199,7 +199,7 @@ export default function Header({ data }: HeaderProps) {
                             href={item.url || '#'}
                             onMouseEnter={() => setHoveredNav(item.id || item.label)}
                             onMouseLeave={() => setHoveredNav(null)}
-                            className="inline-flex items-center text-base font-medium pb-1 border-b-[3px]"
+                            className="inline-flex items-center whitespace-nowrap text-sm font-medium pb-1 border-b-[3px]"
                             style={{
                               color: hoveredNav === (item.id || item.label)
                                 ? '#FFAA01'
@@ -222,7 +222,7 @@ export default function Header({ data }: HeaderProps) {
                             <button
                               onMouseEnter={() => setHoveredNav(item.id || item.label)}
                               onMouseLeave={() => setHoveredNav(null)}
-                              className="inline-flex items-center gap-1 text-base font-medium pb-1 border-b-[3px]"
+                              className="inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium pb-1 border-b-[3px]"
                               style={{
                                 color: hoveredNav === (item.id || item.label)
                                   ? '#FFAA01'
@@ -288,7 +288,7 @@ export default function Header({ data }: HeaderProps) {
             {data.searchBar?.enabled && (
               <>
                 {/* Desktop search */}
-                <div className="hidden md:flex items-center bg-gray-100 rounded-lg px-3 py-2 gap-2 w-56">
+                <div className="hidden md:flex items-center bg-gray-100 rounded-lg px-3 py-2 gap-2 w-40 lg:w-56">
                   <Search size={16} className="text-gray-400 shrink-0" />
                   <input
                     type="text"

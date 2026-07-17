@@ -77,6 +77,14 @@ async function syncNavToHeader(payload: any) {
   const nextHiddenSet = new Set(nextHiddenUrls)
 
   // 5. Build the new page links, but PRESERVE their existing `children` submenus
+  // AND preserve the admin's manual ordering from the Header nav.
+  const existingPageOrder = new Map<string, number>()
+  existingNav.forEach((item: any, index: number) => {
+    if (typeof item.url === 'string' && allPageUrls.has(item.url)) {
+      existingPageOrder.set(item.url, index)
+    }
+  })
+
   const pageNavItems = activePages.docs.map((page: any) => {
     const url = page.slug === 'home' ? '/' : `/${page.slug}`
     const previousItem = existingNav.find((item: any) => item.url === url)
@@ -84,18 +92,31 @@ async function syncNavToHeader(payload: any) {
       label: page.title,
       url: url,
       children: sanitizeChildren(previousItem?.children), // Keep valid submenus only.
+      _navOrder: page.navOrder ?? 0,
+      _existingIndex: existingPageOrder.has(url) ? existingPageOrder.get(url)! : Infinity,
     }
   }).filter((item: any) => !nextHiddenSet.has(item.url))
 
-  // Combine them: Page links first (sorted by navOrder), then any manual links at the end
-  const navItems = [...pageNavItems, ...manualNavItems]
+  // If items already existed in the nav, preserve the admin's manual order.
+  // Only newly added pages get sorted by navOrder and appended.
+  const existingItems = pageNavItems.filter((item: any) => item._existingIndex !== Infinity)
+  const newItems = pageNavItems.filter((item: any) => item._existingIndex === Infinity)
+
+  existingItems.sort((a: any, b: any) => a._existingIndex - b._existingIndex)
+  newItems.sort((a: any, b: any) => (a._navOrder - b._navOrder) || 0)
+
+  // Clean up internal sort keys
+  const sortedPageItems = [...existingItems, ...newItems].map(({ _navOrder, _existingIndex, ...rest }: any) => rest)
+
+  // Combine them: Page links (preserving admin order), then any manual links at the end
+  const navItems = [...sortedPageItems, ...manualNavItems]
 
   await payload.updateGlobal({
     slug: 'header',
     data: {
       navItems,
       navSyncHiddenPageUrls: nextHiddenUrls.map((url) => ({ url })),
-      navSyncLastSyncedPageUrls: pageNavItems.map((item: any) => ({ url: item.url })),
+      navSyncLastSyncedPageUrls: sortedPageItems.map((item: any) => ({ url: item.url })),
     },
     overrideAccess: true,
   })

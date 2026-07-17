@@ -23,6 +23,8 @@ import CareerPostingBlock from './blocks/CareerPostingBlock'
 import StatesOnboardedBlock from './blocks/StatesOnboardedBlock'
 import FormLayoutBlock from './blocks/FormLayoutBlock'
 import GoaSchoolSnapshotBlock from './blocks/GoaSchoolSnapshotBlock'
+import BlogPostsBlock from './blocks/BlogPostsBlock'
+import ContactSectionBlock from './blocks/ContactSectionBlock'
 
 const blockComponents: Record<string, React.ComponentType<any>> = {
   hero: HeroBlock,
@@ -49,6 +51,8 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   careerPosting: CareerPostingBlock,
   statesOnboarded: StatesOnboardedBlock,
   goaSnapshot: GoaSchoolSnapshotBlock,
+  blogPosts: BlogPostsBlock,
+  contactSection: ContactSectionBlock,
 }
 
 interface BlockRendererProps {

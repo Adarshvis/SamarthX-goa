@@ -23,6 +23,15 @@ function findRowByName(rows: SnapshotDataRow[], name: string | null): SnapshotDa
   return rows.find((row) => row.name === name) || null
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+  const cleaned = hex.replace('#', '')
+  const r = parseInt(cleaned.substring(0, 2), 16)
+  const g = parseInt(cleaned.substring(2, 4), 16)
+  const b = parseInt(cleaned.substring(4, 6), 16)
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(30, 58, 138, ${alpha})`
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
 function getCardShadow(shadow: 'none' | 'soft' | 'medium' | 'strong'): string {
   if (shadow === 'none') return 'none'
   if (shadow === 'medium') return '0 10px 20px rgba(15, 23, 42, 0.08)'
@@ -66,11 +75,13 @@ function statValueForSource(
 export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSectionProps) {
   const normalized = useMemo(() => normalizeSnapshotData(data), [data])
   const [view, setView] = useState<SnapshotView>(normalized.currentView)
-  const [selectedName, setSelectedName] = useState<string | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number>(0)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [hoveredName, setHoveredName] = useState<string | null>(null)
 
   const activeRows = useMemo(() => rowsForView(view, normalized), [view, normalized])
-  const selected = findRowByName(activeRows, selectedName) || activeRows[0] || null
+  const selected = activeRows[selectedIndex] ?? activeRows[0] ?? null
+  const selectedName = selected?.name ?? null
 
   const total = useMemo(
     () => activeRows.reduce((sum, row) => sum + (row.totalSchools ?? 0), 0),
@@ -135,7 +146,8 @@ export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSect
                 currentView={view}
                 onViewChange={(nextView) => {
                   setView(nextView)
-                  setSelectedName(null)
+                  setSelectedIndex(0)
+                  setHoveredIndex(null)
                   setHoveredName(null)
                 }}
                 applyLabel={data.filterSettings?.applyFilterButton || 'Apply Filter'}
@@ -162,7 +174,13 @@ export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSect
                         style={cardStyle}
                       >
                         {stat.iconName && (
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
+                          <div
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                            style={{
+                              backgroundColor: hexToRgba(normalized.style.tableHeaderBackground, 0.12),
+                              color: normalized.style.tableHeaderBackground,
+                            }}
+                          >
                             <DynamicIcon name={stat.iconName} size={22} />
                           </div>
                         )}
@@ -187,7 +205,13 @@ export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSect
                       style={cardStyle}
                     >
                       {stat.iconName && (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
+                        <div
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                          style={{
+                            backgroundColor: hexToRgba(normalized.style.tableHeaderBackground, 0.12),
+                            color: normalized.style.tableHeaderBackground,
+                          }}
+                        >
                           <DynamicIcon name={stat.iconName} size={22} />
                         </div>
                       )}
@@ -213,18 +237,19 @@ export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSect
               <SnapshotTable
                 title={view === 'taluka' ? 'Talukas' : view === 'district' ? 'Districts' : 'School Type & Management'}
                 rows={activeRows}
-                selectedName={selected?.name || null}
-                hoveredName={hoveredName}
-                onSelect={setSelectedName}
-                onHover={setHoveredName}
+                selectedIndex={selectedIndex}
+                hoveredIndex={hoveredIndex}
+                onSelect={setSelectedIndex}
+                onHover={setHoveredIndex}
                 headerBackground={normalized.style.tableHeaderBackground}
+                activeRowColor={normalized.style.activeRowColor}
               />
             </div>
           )}
 
           {normalized.layout.showMiddlePanel && (
             <div className="lg:col-span-3">
-              <SnapshotDetailPanel item={selected} total={total} />
+              <SnapshotDetailPanel item={selected} total={total} themeColor={normalized.style.tableHeaderBackground} />
             </div>
           )}
 
@@ -232,9 +257,12 @@ export default function GoaSchoolSnapshotSection({ data }: GoaSchoolSnapshotSect
             <div className="lg:col-span-6">
               <GoaMapPanel
                 rows={activeRows}
-                selectedName={selected?.name || null}
+                selectedName={selectedName}
                 hoveredName={hoveredName}
-                onSelect={setSelectedName}
+                onSelect={(name) => {
+                  const idx = activeRows.findIndex((r) => r.name === name)
+                  setSelectedIndex(idx >= 0 ? idx : 0)
+                }}
                 onHover={setHoveredName}
                 markerColor={normalized.map.markerColor}
                 activeMarkerColor={normalized.map.activeMarkerColor}

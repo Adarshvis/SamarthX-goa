@@ -16,8 +16,11 @@ import * as migration_20260412_220000_add_goa_snapshot_summary_cards from './202
 import * as migration_20260413_110000_add_hero_header_glass_fields from './20260413_110000_add_hero_header_glass_fields';
 import * as migration_20260413_120000_add_hero_constant_overlay_content from './20260413_120000_add_hero_constant_overlay_content';
 import * as migration_20260413_130000_add_hero_text_color_fields from './20260413_130000_add_hero_text_color_fields';
-import * as migration_20260413_140000_add_goa_snapshot_show_apply_button from './20260413_140000_add_goa_snapshot_show_apply_button';
 import * as migration_20260413_131000_fix_hero_single_slide_color_columns from './20260413_131000_fix_hero_single_slide_color_columns';
+import * as migration_20260413_140000_add_goa_snapshot_show_apply_button from './20260413_140000_add_goa_snapshot_show_apply_button';
+import * as migration_20260415_033049 from './20260415_033049';
+import * as migration_20260415_034422 from './20260415_034422';
+import * as migration_20260415_041922 from './20260415_041922';
 
 export const migrations = [
   {
@@ -29,11 +32,6 @@ export const migrations = [
     up: migration_20260407_063000_cleanup_invalid_header_child_pages.up,
     down: migration_20260407_063000_cleanup_invalid_header_child_pages.down,
     name: '20260407_063000_cleanup_invalid_header_child_pages',
-  {
-    up: migration_20260413_140000_add_goa_snapshot_show_apply_button.up,
-    down: migration_20260413_140000_add_goa_snapshot_show_apply_button.down,
-    name: '20260413_140000_add_goa_snapshot_show_apply_button',
-  },
   },
   {
     up: migration_20260407_115828.up,
@@ -93,7 +91,7 @@ export const migrations = [
   {
     up: migration_20260411_183827_add_goa_snapshot_block.up,
     down: migration_20260411_183827_add_goa_snapshot_block.down,
-    name: '20260411_183827_add_goa_snapshot_block'
+    name: '20260411_183827_add_goa_snapshot_block',
   },
   {
     up: migration_20260412_220000_add_goa_snapshot_summary_cards.up,
@@ -119,5 +117,25 @@ export const migrations = [
     up: migration_20260413_131000_fix_hero_single_slide_color_columns.up,
     down: migration_20260413_131000_fix_hero_single_slide_color_columns.down,
     name: '20260413_131000_fix_hero_single_slide_color_columns',
+  },
+  {
+    up: migration_20260413_140000_add_goa_snapshot_show_apply_button.up,
+    down: migration_20260413_140000_add_goa_snapshot_show_apply_button.down,
+    name: '20260413_140000_add_goa_snapshot_show_apply_button',
+  },
+  {
+    up: migration_20260415_033049.up,
+    down: migration_20260415_033049.down,
+    name: '20260415_033049',
+  },
+  {
+    up: migration_20260415_034422.up,
+    down: migration_20260415_034422.down,
+    name: '20260415_034422',
+  },
+  {
+    up: migration_20260415_041922.up,
+    down: migration_20260415_041922.down,
+    name: '20260415_041922'
   },
 ];

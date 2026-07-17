@@ -106,6 +106,7 @@ export interface GoaSchoolSnapshotBlockData {
     titleColor?: string | null
     cardBackground?: string | null
     tableHeaderBackground?: string | null
+    activeRowColor?: string | null
   } | null
   animations?: {
     enableHoverEffects?: boolean | null
@@ -161,6 +162,7 @@ export interface SnapshotNormalizedData {
     titleColor: string
     cardBackground: string
     tableHeaderBackground: string
+    activeRowColor: string
   }
   animation: {
     enableHoverEffects: boolean

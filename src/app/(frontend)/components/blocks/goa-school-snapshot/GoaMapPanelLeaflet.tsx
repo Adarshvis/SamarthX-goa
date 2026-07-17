@@ -154,7 +154,6 @@ function ConfigureMap() {
 
   useEffect(() => {
     map.scrollWheelZoom.disable()
-    map.zoomControl?.remove()
     ;(map as { attributionControl?: { remove: () => void } }).attributionControl?.remove()
     map.setMaxBounds([
       [14.75, 73.45],
@@ -199,12 +198,15 @@ export default function GoaMapPanelLeaflet({
         className="relative z-0 h-full w-full"
       >
         <ConfigureMap />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
         <FitToMarkers markers={markers} centerLat={centerLat} centerLng={centerLng} zoom={zoom} />
 
         {markers.map((marker) => {
           const active = selectedName === marker.row.name || hoveredName === marker.row.name
-          const radius = Math.max(4, (active ? activeMarkerSize : markerSize) / 2)
+          const schools = marker.row.totalSchools ?? 0
+          const maxSchools = Math.max(...markers.map((m) => m.row.totalSchools ?? 0), 1)
+          const scaledRadius = Math.max(4, 5 + (schools / maxSchools) * 7)
+          const radius = active ? scaledRadius * 1.2 : scaledRadius
 
           return (
             <LeafletCircleMarker
@@ -252,12 +254,6 @@ export default function GoaMapPanelLeaflet({
             )
           })}
       </LeafletMapContainer>
-
-      {markers.length === 0 && (
-        <div className="absolute inset-x-4 bottom-4 rounded-xl bg-white/85 px-3 py-2 text-xs font-semibold text-slate-600 backdrop-blur">
-          Add marker coordinates in Goa Snapshot rows to pin exact locations.
-        </div>
-      )}
 
       <style jsx global>{`
         .goa-snapshot-map .leaflet-pane,

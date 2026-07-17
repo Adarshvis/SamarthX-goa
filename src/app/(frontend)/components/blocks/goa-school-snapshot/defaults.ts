@@ -113,6 +113,7 @@ export function normalizeSnapshotData(data: GoaSchoolSnapshotBlockData): Snapsho
       titleColor: data.styles?.titleColor || '#0f172a',
       cardBackground: data.styles?.cardBackground || '#ffffff',
       tableHeaderBackground: data.styles?.tableHeaderBackground || '#1e3a8a',
+      activeRowColor: data.styles?.activeRowColor || '',
     },
     animation: {
       enableHoverEffects: data.animations?.enableHoverEffects !== false,

@@ -24,6 +24,8 @@ import { FlexibleRow } from '../blocks/FlexibleRow'
 import { CareerPosting } from '../blocks/CareerPosting'
 import { StatesOnboarded } from '../blocks/StatesOnboarded'
 import { FormLayout } from '../blocks/FormLayout'
+import { BlogPosts } from '../blocks/BlogPosts'
+import { ContactSection } from '../blocks/ContactSection'
 import { GoaSchoolSnapshotBlock } from '../blocks/GoaSchoolSnapshotBlock'
 
 export const Pages: CollectionConfig = {
@@ -176,6 +178,8 @@ export const Pages: CollectionConfig = {
         ContentWithMedia,
         FlexibleRow,
         CareerPosting,
+        BlogPosts,
+        ContactSection,
       ],
     },
   ],

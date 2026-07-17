@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     pages: Page;
     news: News;
+    blogs: Blog;
     resumes: Resume;
     'job-applications': JobApplication;
     forms: Form;
@@ -86,6 +87,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
+    blogs: BlogsSelect<false> | BlogsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -1869,6 +1871,223 @@ export interface Page {
         blockName?: string | null;
         blockType: 'careerPosting';
       }
+    | {
+        /**
+         * Rich text heading displayed above this block
+         */
+        sectionHeading?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Rich text description below the heading
+         */
+        sectionDescription?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        headingAlignment?: ('left' | 'center' | 'right') | null;
+        /**
+         * Choose between a card grid or a featured spotlight layout
+         */
+        layout: 'cards' | 'spotlight';
+        /**
+         * Choose manual card entry or automatic fetch from Blogs collection.
+         */
+        entryType: 'manual' | 'collection';
+        articles?:
+          | {
+              title: string;
+              /**
+               * Short summary or excerpt
+               */
+              excerpt?: string | null;
+              image?: (number | null) | Media;
+              /**
+               * Category label (e.g. "Technology", "Education")
+               */
+              category?: string | null;
+              /**
+               * Author name
+               */
+              author?: string | null;
+              /**
+               * Estimated read time (e.g. "5 min read")
+               */
+              readTime?: string | null;
+              /**
+               * Published date
+               */
+              date?: string | null;
+              /**
+               * Link to the full blog post
+               */
+              url?: string | null;
+              /**
+               * Select a Lucide icon
+               */
+              icon?: string | null;
+              /**
+               * Pick a color or enter hex value
+               */
+              categoryColor?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        collectionSource?: {
+          /**
+           * Maximum number of posts to fetch
+           */
+          limit: number;
+          sortBy?: ('latest' | 'oldest') | null;
+          /**
+           * Optional category filter (exact match)
+           */
+          category?: string | null;
+          featuredOnly?: boolean | null;
+        };
+        columns?: ('2' | '3' | '4') | null;
+        bottomLink?: {
+          enabled?: boolean | null;
+          label?: string | null;
+          url?: string | null;
+        };
+        /**
+         * Pick a color or enter hex value
+         */
+        backgroundColor?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'blogPosts';
+      }
+    | {
+        /**
+         * Choose the layout style for this contact section
+         */
+        layout: 'modern' | 'classic' | 'centered' | 'formOnly';
+        /**
+         * Rich text heading (e.g. "Get in <italic>Touch</italic>")
+         */
+        sectionHeading?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Description text below the heading
+         */
+        sectionDescription?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Add contact details like location, phone, email, etc.
+         */
+        contactItems?:
+          | {
+              /**
+               * Select a Lucide icon
+               */
+              icon?: string | null;
+              /**
+               * e.g. "Our Location"
+               */
+              label: string;
+              /**
+               * e.g. "Goa Education Complex, Alto, Porvorim"
+               */
+              value: string;
+              /**
+               * Pick a color or enter hex value
+               */
+              iconColor?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Upload logos to display (classic layout)
+         */
+        logos?:
+          | {
+              image: number | Media;
+              /**
+               * Alt text for the logo
+               */
+              alt?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * e.g. "GOVERNMENT OF GOA"
+         */
+        organizationName?: string | null;
+        /**
+         * Additional org details (address, phone, email)
+         */
+        organizationDetails?: string | null;
+        /**
+         * Select a Form Builder form to embed in this section
+         */
+        form: number | Form;
+        /**
+         * Override the submit button text
+         */
+        submitButtonLabel?: string | null;
+        /**
+         * Pick a color or enter hex value
+         */
+        backgroundColor?: string | null;
+        /**
+         * Pick a color or enter hex value
+         */
+        buttonColor?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'contactSection';
+      }
   )[];
   updatedAt: string;
   createdAt: string;
@@ -2132,6 +2351,79 @@ export interface News {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs".
+ */
+export interface Blog {
+  id: number;
+  /**
+   * Blog post headline
+   */
+  title: string;
+  /**
+   * URL-friendly version of title (e.g. "my-first-blog-post")
+   */
+  slug: string;
+  /**
+   * Brief summary shown on blog listing pages
+   */
+  excerpt: string;
+  /**
+   * Main image for the blog post
+   */
+  featuredImage: number | Media;
+  /**
+   * Category label (e.g. Technology, Education, Policy)
+   */
+  category: string;
+  /**
+   * Main blog post content
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Publication date
+   */
+  publishedDate: string;
+  /**
+   * Author name
+   */
+  author?: string | null;
+  /**
+   * Estimated read time (e.g. "5 min read")
+   */
+  readTime?: string | null;
+  /**
+   * Related tags/keywords for this blog post
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Mark as featured blog post
+   */
+  isFeatured?: boolean | null;
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Uploaded resume/CV files from job applicants
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2237,6 +2529,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'news';
         value: number | News;
+      } | null)
+    | ({
+        relationTo: 'blogs';
+        value: number | Blog;
       } | null)
     | ({
         relationTo: 'resumes';
@@ -3261,6 +3557,80 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        blogPosts?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              layout?: T;
+              entryType?: T;
+              articles?:
+                | T
+                | {
+                    title?: T;
+                    excerpt?: T;
+                    image?: T;
+                    category?: T;
+                    author?: T;
+                    readTime?: T;
+                    date?: T;
+                    url?: T;
+                    icon?: T;
+                    categoryColor?: T;
+                    id?: T;
+                  };
+              collectionSource?:
+                | T
+                | {
+                    limit?: T;
+                    sortBy?: T;
+                    category?: T;
+                    featuredOnly?: T;
+                  };
+              columns?: T;
+              bottomLink?:
+                | T
+                | {
+                    enabled?: T;
+                    label?: T;
+                    url?: T;
+                  };
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contactSection?:
+          | T
+          | {
+              layout?: T;
+              sectionHeading?: T;
+              sectionDescription?: T;
+              contactItems?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    value?: T;
+                    iconColor?: T;
+                    id?: T;
+                  };
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    alt?: T;
+                    id?: T;
+                  };
+              organizationName?: T;
+              organizationDetails?: T;
+              form?: T;
+              submitButtonLabel?: T;
+              backgroundColor?: T;
+              buttonColor?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3277,6 +3647,31 @@ export interface NewsSelect<T extends boolean = true> {
   category?: T;
   content?: T;
   publishedDate?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  isFeatured?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs_select".
+ */
+export interface BlogsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  featuredImage?: T;
+  category?: T;
+  content?: T;
+  publishedDate?: T;
+  author?: T;
+  readTime?: T;
   tags?:
     | T
     | {
