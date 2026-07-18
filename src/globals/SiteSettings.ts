@@ -4,6 +4,7 @@ import { publicAccess, adminAccess } from '../access/roles'
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site Settings',
+  lockDocuments: false,
   access: {
     read: publicAccess,
     update: adminAccess,

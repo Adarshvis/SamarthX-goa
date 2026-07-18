@@ -1,5 +1,5 @@
 import React from 'react'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
 import config from '@/payload.config'
 import { getPayload } from '@/lib/payload'
@@ -18,6 +18,13 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-plus-jakarta',
   display: 'swap',
 })
 
@@ -70,7 +77,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   } as React.CSSProperties
 
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${plusJakarta.variable}`}>
       <body className="flex flex-col min-h-screen" style={themeStyle}>
         <Header data={headerData} />
         <main className="site-main flex-1">{children}</main>

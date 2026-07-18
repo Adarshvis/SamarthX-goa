@@ -145,6 +145,77 @@ function slideFields() {
   ]
 }
 
+// Media-only fields (no text overlay) reused for the Split Showcase right-side slider.
+function showcaseMediaSlideFields() {
+  return [
+    {
+      name: 'mediaType',
+      type: 'select' as const,
+      defaultValue: 'image',
+      required: true,
+      options: [
+        { label: 'Image Media', value: 'image' },
+        { label: 'Video Media (Upload)', value: 'video' },
+        { label: 'YouTube / Vimeo', value: 'externalVideo' },
+        { label: 'Animation (Lottie / GIF)', value: 'animation' },
+      ],
+    },
+    {
+      name: 'image',
+      type: 'upload' as const,
+      relationTo: 'media' as const,
+      admin: {
+        condition: (_: any, siblingData: any) => siblingData?.mediaType === 'image',
+      },
+    },
+    {
+      name: 'videoUrl',
+      type: 'text' as const,
+      admin: {
+        condition: (_: any, siblingData: any) => siblingData?.mediaType === 'video',
+        description: 'URL to self-hosted video file (mp4, webm)',
+      },
+    },
+    {
+      name: 'videoPoster',
+      type: 'upload' as const,
+      relationTo: 'media' as const,
+      admin: {
+        condition: (_: any, siblingData: any) => siblingData?.mediaType === 'video',
+        description: 'Poster/thumbnail image for the video',
+      },
+    },
+    {
+      name: 'externalVideoUrl',
+      type: 'text' as const,
+      admin: {
+        condition: (_: any, siblingData: any) => siblingData?.mediaType === 'externalVideo',
+        description: 'YouTube or Vimeo URL',
+      },
+    },
+    {
+      name: 'animationUrl',
+      type: 'text' as const,
+      admin: {
+        condition: (_: any, siblingData: any) => siblingData?.mediaType === 'animation',
+        description: 'URL to Lottie JSON file or GIF image',
+      },
+    },
+  ]
+}
+
+const colorThemeField = {
+  name: 'colorTheme',
+  type: 'select' as const,
+  defaultValue: 'blue',
+  options: [
+    { label: 'Blue', value: 'blue' },
+    { label: 'Green', value: 'green' },
+    { label: 'Purple', value: 'purple' },
+    { label: 'Orange', value: 'orange' },
+  ],
+}
+
 export const Hero: Block = {
   slug: 'hero',
   labels: { singular: 'Hero', plural: 'Heroes' },
@@ -158,6 +229,9 @@ export const Hero: Block = {
         { label: 'Single Slide', value: 'single' },
         { label: 'Carousel (Multiple Slides)', value: 'carousel' },
       ],
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout !== 'splitShowcase',
+      },
     },
     {
       name: 'layout',
@@ -168,6 +242,7 @@ export const Hero: Block = {
         { label: 'Full-Width Background', value: 'fullWidth' },
         { label: 'Fullscreen Overlay Carousel', value: 'fullscreenOverlayCarousel' },
         { label: '50/50 Split (Text + Media)', value: 'split' },
+        { label: 'Split Showcase (Text + Media + Cards)', value: 'splitShowcase' },
         { label: 'Contained', value: 'contained' },
       ],
     },
@@ -335,7 +410,10 @@ export const Hero: Block = {
       type: 'group',
       name: 'carouselSettings',
       label: 'Carousel Settings',
-      admin: { condition: (_, siblingData) => siblingData?.mode === 'carousel' },
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.mode === 'carousel' && siblingData?.layout !== 'splitShowcase',
+      },
       fields: [
         { name: 'autoPlay', type: 'checkbox', defaultValue: true },
         {
@@ -353,16 +431,208 @@ export const Hero: Block = {
     },
     {
       type: 'group',
+      name: 'showcaseEyebrow',
+      label: 'Split Showcase — Eyebrow Badge',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+      },
+      fields: [
+        { name: 'enabled', type: 'checkbox', defaultValue: true },
+        {
+          name: 'icon',
+          type: 'text',
+          admin: {
+            condition: (_, siblingData) => siblingData?.enabled,
+            components: { Field: '@/components/admin/IconPickerField#IconPickerField' },
+            description: 'Badge icon (Lucide)',
+          },
+        },
+        {
+          name: 'text',
+          type: 'text',
+          admin: {
+            condition: (_, siblingData) => siblingData?.enabled,
+            description: 'e.g. "Building Better Education, Together"',
+          },
+        },
+      ],
+    },
+    {
+      name: 'showcaseTitle',
+      type: 'richText',
+      label: 'Split Showcase — Title',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+        description: 'Main heading. Use the color tool to highlight words.',
+      },
+    },
+    {
+      name: 'showcaseSubtitle',
+      type: 'richText',
+      label: 'Split Showcase — Subtitle',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+        description: 'Supporting text below the heading.',
+      },
+    },
+    {
+      name: 'showcaseButtons',
+      type: 'array',
+      label: 'Split Showcase — Buttons',
+      maxRows: 3,
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+      },
+      fields: [
+        { name: 'label', type: 'text', required: true },
+        { name: 'url', type: 'text', required: true },
+        {
+          name: 'variant',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { label: 'Primary (Filled)', value: 'primary' },
+            { label: 'Secondary (White)', value: 'secondary' },
+            { label: 'Outline', value: 'outline' },
+          ],
+        },
+        {
+          name: 'icon',
+          type: 'text',
+          admin: {
+            components: { Field: '@/components/admin/IconPickerField#IconPickerField' },
+            description: 'Button icon (Lucide)',
+          },
+        },
+        { name: 'openInNewTab', type: 'checkbox', defaultValue: false },
+      ],
+    },
+    {
+      name: 'showcaseTrustBadges',
+      type: 'array',
+      label: 'Split Showcase — Trust Badges',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+      },
+      fields: [
+        {
+          name: 'icon',
+          type: 'text',
+          admin: {
+            components: { Field: '@/components/admin/IconPickerField#IconPickerField' },
+            description: 'Badge icon (Lucide)',
+          },
+        },
+        { name: 'label', type: 'text', required: true },
+        { ...colorThemeField },
+      ],
+    },
+    {
+      name: 'showcaseVisualType',
+      type: 'select',
+      defaultValue: 'illustration',
+      label: 'Split Showcase — Right Visual Type',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+      },
+      options: [
+        { label: 'Built-in School Illustration', value: 'illustration' },
+        { label: 'Media Slider (images / video / animation)', value: 'mediaSlider' },
+      ],
+    },
+    {
+      name: 'showcaseVisualSlides',
+      type: 'array',
+      label: 'Split Showcase — Media Slides',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'splitShowcase' && siblingData?.showcaseVisualType === 'mediaSlider',
+        description: 'Add one or more media items. Multiple items become a slider.',
+      },
+      fields: showcaseMediaSlideFields(),
+    },
+    {
+      type: 'group',
+      name: 'showcaseSliderSettings',
+      label: 'Split Showcase — Slider Settings',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'splitShowcase' && siblingData?.showcaseVisualType === 'mediaSlider',
+      },
+      fields: [
+        { name: 'autoPlay', type: 'checkbox', defaultValue: true },
+        {
+          name: 'autoPlayInterval',
+          type: 'number',
+          defaultValue: 5000,
+          admin: {
+            condition: (_, siblingData) => siblingData?.autoPlay,
+            description: 'Interval in milliseconds',
+          },
+        },
+        { name: 'showArrows', type: 'checkbox', defaultValue: true },
+        { name: 'showDots', type: 'checkbox', defaultValue: true },
+      ],
+    },
+    {
+      name: 'showcaseShowFloatingCards',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Split Showcase — Show floating cards',
+      admin: {
+        condition: (_, siblingData) => siblingData?.layout === 'splitShowcase',
+      },
+    },
+    {
+      name: 'showcaseFloatingCards',
+      type: 'array',
+      label: 'Split Showcase — Floating Stat Cards',
+      maxRows: 4,
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'splitShowcase' && siblingData?.showcaseShowFloatingCards !== false,
+      },
+      fields: [
+        {
+          name: 'icon',
+          type: 'text',
+          admin: {
+            components: { Field: '@/components/admin/IconPickerField#IconPickerField' },
+            description: 'Card icon (Lucide)',
+          },
+        },
+        { name: 'label', type: 'text', required: true },
+        { name: 'value', type: 'text', required: true },
+        { name: 'suffix', type: 'text', admin: { description: 'e.g. "↑ 12.5%" or "New"' } },
+        { ...colorThemeField },
+        {
+          name: 'position',
+          type: 'select',
+          defaultValue: 'topLeft',
+          options: [
+            { label: 'Top Left', value: 'topLeft' },
+            { label: 'Middle Left', value: 'midLeft' },
+            { label: 'Top Right', value: 'topRight' },
+            { label: 'Bottom Right', value: 'bottomRight' },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
       name: 'singleSlide',
       label: 'Slide Content',
-      admin: { condition: (_, siblingData) => siblingData?.mode === 'single' },
+      admin: { condition: (_, siblingData) => siblingData?.mode === 'single' && siblingData?.layout !== 'splitShowcase' },
       fields: slideFields(),
     },
     {
       name: 'slides',
       type: 'array',
       label: 'Slides',
-      admin: { condition: (_, siblingData) => siblingData?.mode === 'carousel' },
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData?.mode === 'carousel' && siblingData?.layout !== 'splitShowcase',
+      },
       fields: slideFields(),
     },
   ],

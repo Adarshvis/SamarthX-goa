@@ -29,6 +29,7 @@ async function sanitizeHeaderChildPageRefs(data: any, payload: any) {
 export const Header: GlobalConfig = {
   slug: 'header',
   label: 'Header',
+  lockDocuments: false,
   hooks: {
     beforeChange: [
       async ({ data, req }) => sanitizeHeaderChildPageRefs(data, req.payload),

@@ -1,10 +1,8 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import config from '@/payload.config'
 import { getPayload } from '@/lib/payload'
-import RichText from '../../components/ui/RichText'
-import PageBanner from '../../components/PageBanner'
+import ArticleLayout from '../../components/ArticleLayout'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -74,38 +72,26 @@ export default async function BlogDetailPage({ params }: PageProps) {
       ? article.featuredImage.alt
       : article.title
 
+  const base = process.env.NEXT_PUBLIC_APP_URL || ''
+  const shareUrl = base ? `${base}/blogs/${slug}` : ''
+
   return (
     <div className="cms-page-shell">
-      <PageBanner title={article.title} slug={slug} />
-      <section className="py-14 px-6">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl border border-gray-200 p-8 md:p-10">
-          <div className="flex items-center gap-3 mb-4">
-            {article.category && (
-              <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
-                {article.category}
-              </p>
-            )}
-            {article.author && (
-              <p className="text-sm text-gray-500">by {article.author}</p>
-            )}
-          </div>
-          {article.publishedDate && (
-            <p className="text-sm text-gray-500 mb-6">{formatDate(article.publishedDate)}</p>
-          )}
-
-          {featuredImageUrl && (
-            <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden mb-8">
-              <Image src={featuredImageUrl} alt={featuredImageAlt} fill className="object-cover" />
-            </div>
-          )}
-
-          {article.excerpt && (
-            <p className="text-lg text-gray-700 leading-relaxed mb-8">{article.excerpt}</p>
-          )}
-
-          {article.content ? <RichText data={article.content} /> : null}
-        </div>
-      </section>
+      <ArticleLayout
+        title={article.title}
+        category={article.category}
+        date={formatDate(article.publishedDate)}
+        author={article.author}
+        readTime={article.readTime}
+        imageUrl={featuredImageUrl}
+        imageAlt={featuredImageAlt}
+        excerpt={article.excerpt}
+        content={article.content}
+        tags={article.tags}
+        backHref="/blogs"
+        backLabel="Back to Blogs"
+        shareUrl={shareUrl}
+      />
     </div>
   )
 }

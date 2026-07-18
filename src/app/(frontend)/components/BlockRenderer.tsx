@@ -25,6 +25,7 @@ import FormLayoutBlock from './blocks/FormLayoutBlock'
 import GoaSchoolSnapshotBlock from './blocks/GoaSchoolSnapshotBlock'
 import BlogPostsBlock from './blocks/BlogPostsBlock'
 import ContactSectionBlock from './blocks/ContactSectionBlock'
+import StatsBarBlock from './blocks/StatsBarBlock'
 
 const blockComponents: Record<string, React.ComponentType<any>> = {
   hero: HeroBlock,
@@ -53,6 +54,7 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   goaSnapshot: GoaSchoolSnapshotBlock,
   blogPosts: BlogPostsBlock,
   contactSection: ContactSectionBlock,
+  statsBar: StatsBarBlock,
 }
 
 interface BlockRendererProps {

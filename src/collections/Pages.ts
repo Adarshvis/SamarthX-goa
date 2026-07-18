@@ -26,10 +26,12 @@ import { StatesOnboarded } from '../blocks/StatesOnboarded'
 import { FormLayout } from '../blocks/FormLayout'
 import { BlogPosts } from '../blocks/BlogPosts'
 import { ContactSection } from '../blocks/ContactSection'
+import { StatsBar } from '../blocks/StatsBar'
 import { GoaSchoolSnapshotBlock } from '../blocks/GoaSchoolSnapshotBlock'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  lockDocuments: false,
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
@@ -180,6 +182,7 @@ export const Pages: CollectionConfig = {
         CareerPosting,
         BlogPosts,
         ContactSection,
+        StatsBar,
       ],
     },
   ],

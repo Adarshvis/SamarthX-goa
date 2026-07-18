@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Lottie from 'lottie-react'
 import DynamicIcon from '../ui/DynamicIcon'
+import RichText from '../ui/RichText'
+import SchoolIllustration from './hero/SchoolIllustration'
 
 const mediaFillStyle: React.CSSProperties = {
   position: 'absolute',
@@ -42,10 +44,65 @@ interface SlideData {
   id?: string | null
 }
 
+type ColorTheme = 'blue' | 'green' | 'purple' | 'orange'
+
+interface ShowcaseMediaSlide {
+  mediaType?: string | null
+  image?: any
+  videoUrl?: string | null
+  videoPoster?: any
+  externalVideoUrl?: string | null
+  animationUrl?: string | null
+  id?: string | null
+}
+
+interface ShowcaseData {
+  eyebrow?: { enabled?: boolean | null; icon?: string | null; text?: string | null } | null
+  title?: any
+  subtitle?: any
+  buttons?: {
+    label: string
+    url: string
+    variant?: 'primary' | 'secondary' | 'outline' | null
+    icon?: string | null
+    openInNewTab?: boolean | null
+    id?: string | null
+  }[] | null
+  trustBadges?: { icon?: string | null; label: string; colorTheme?: ColorTheme | null; id?: string | null }[] | null
+  visualType?: 'illustration' | 'mediaSlider' | null
+  visualSlides?: ShowcaseMediaSlide[] | null
+  sliderSettings?: {
+    autoPlay?: boolean | null
+    autoPlayInterval?: number | null
+    showArrows?: boolean | null
+    showDots?: boolean | null
+  } | null
+  showFloatingCards?: boolean | null
+  floatingCards?: {
+    icon?: string | null
+    label: string
+    value: string
+    suffix?: string | null
+    colorTheme?: ColorTheme | null
+    position?: 'topLeft' | 'midLeft' | 'topRight' | 'bottomRight' | null
+    id?: string | null
+  }[] | null
+}
+
 interface HeroBlockProps {
   mode?: 'single' | 'carousel' | null
-  layout?: 'fullWidth' | 'fullscreenOverlayCarousel' | 'split' | 'contained' | null
+  layout?: 'fullWidth' | 'fullscreenOverlayCarousel' | 'split' | 'splitShowcase' | 'contained' | null
   splitDirection?: 'textLeft' | 'textRight' | null
+  showcaseEyebrow?: ShowcaseData['eyebrow']
+  showcaseTitle?: any
+  showcaseSubtitle?: any
+  showcaseButtons?: ShowcaseData['buttons']
+  showcaseTrustBadges?: ShowcaseData['trustBadges']
+  showcaseVisualType?: ShowcaseData['visualType']
+  showcaseVisualSlides?: ShowcaseData['visualSlides']
+  showcaseSliderSettings?: ShowcaseData['sliderSettings']
+  showcaseShowFloatingCards?: boolean | null
+  showcaseFloatingCards?: ShowcaseData['floatingCards']
   height?: number | null
   textAlignment?: 'left' | 'center' | 'right' | null
   textVerticalPosition?: 'top' | 'center' | 'bottom' | null
@@ -315,6 +372,16 @@ export default function HeroBlock(props: HeroBlockProps) {
   const {
     mode = 'single',
     layout = 'fullWidth',
+    showcaseEyebrow,
+    showcaseTitle,
+    showcaseSubtitle,
+    showcaseButtons,
+    showcaseTrustBadges,
+    showcaseVisualType,
+    showcaseVisualSlides,
+    showcaseSliderSettings,
+    showcaseShowFloatingCards,
+    showcaseFloatingCards,
     splitDirection = 'textLeft',
     height = 600,
     textAlignment = 'center',
@@ -425,6 +492,23 @@ export default function HeroBlock(props: HeroBlockProps) {
       headerEl.style.removeProperty('--header-glass-blur')
     }
   }, [layout, headerGlass])
+
+  // Split Showcase renders its own self-contained layout (does not use base slides).
+  if (layout === 'splitShowcase') {
+    const showcase: ShowcaseData = {
+      eyebrow: showcaseEyebrow,
+      title: showcaseTitle,
+      subtitle: showcaseSubtitle,
+      buttons: showcaseButtons,
+      trustBadges: showcaseTrustBadges,
+      visualType: showcaseVisualType,
+      visualSlides: showcaseVisualSlides,
+      sliderSettings: showcaseSliderSettings,
+      showFloatingCards: showcaseShowFloatingCards,
+      floatingCards: showcaseFloatingCards,
+    }
+    return <SplitShowcaseHero showcase={showcase} />
+  }
 
   if (allSlides.length === 0) return null
 
@@ -655,5 +739,245 @@ function CarouselDots({
         />
       ))}
     </div>
+  )
+}
+
+// ── Split Showcase layout ──
+
+const showcaseThemeMap: Record<ColorTheme, { circle: string; icon: string; value: string }> = {
+  blue: { circle: 'bg-blue-50', icon: 'text-[#2563eb]', value: 'text-[#2563eb]' },
+  green: { circle: 'bg-emerald-50', icon: 'text-emerald-600', value: 'text-emerald-600' },
+  purple: { circle: 'bg-violet-50', icon: 'text-violet-600', value: 'text-violet-600' },
+  orange: { circle: 'bg-orange-50', icon: 'text-orange-500', value: 'text-orange-500' },
+}
+
+const showcaseBtnVariants: Record<string, string> = {
+  primary: 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)]',
+  secondary: 'bg-white hover:bg-slate-50 text-[#2563eb] border border-slate-200 shadow-sm',
+  outline: 'bg-transparent hover:bg-blue-50 text-[#2563eb] border-2 border-[#2563eb]',
+}
+
+const floatingPositionClasses: Record<string, string> = {
+  topLeft: 'top-2 -left-2 md:top-4 md:left-0',
+  midLeft: 'top-[38%] -left-4 md:left-0',
+  topRight: 'top-6 -right-2 md:right-0',
+  bottomRight: 'bottom-8 right-0 md:-right-2',
+}
+
+function hasShowcaseRichText(data: any): boolean {
+  return Boolean(data?.root?.children?.length)
+}
+
+function ShowcaseMediaSliderView({
+  slides,
+  settings,
+}: {
+  slides: ShowcaseMediaSlide[]
+  settings?: ShowcaseData['sliderSettings']
+}) {
+  const [current, setCurrent] = useState(0)
+  const total = slides.length
+  const autoPlay = settings?.autoPlay !== false
+  const interval = settings?.autoPlayInterval || 5000
+  const showArrows = settings?.showArrows !== false && total > 1
+  const showDots = settings?.showDots !== false && total > 1
+
+  useEffect(() => {
+    if (!autoPlay || total <= 1) return
+    const t = setInterval(() => setCurrent((p) => (p + 1) % total), interval)
+    return () => clearInterval(t)
+  }, [autoPlay, interval, total])
+
+  if (total === 0) return null
+
+  const blobRadius = '1.25rem'
+
+  return (
+    <div className="relative -mx-[5px]">
+      <div
+        className="relative aspect-[3/2] w-full overflow-hidden shadow-[0_24px_64px_rgba(15,23,42,0.12)]"
+        style={{ borderRadius: blobRadius }}
+      >
+      {slides.map((slide, i) => {
+        const isImage = (slide.mediaType || 'image') === 'image'
+        const imgUrl = typeof slide.image === 'object' && slide.image?.url ? slide.image.url : null
+        return (
+          <div
+            key={slide.id || i}
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          >
+            {isImage && imgUrl ? (
+              <img
+                src={imgUrl}
+                alt={typeof slide.image === 'object' ? slide.image.alt || '' : ''}
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <SlideMedia slide={slide as SlideData} />
+            )}
+          </div>
+        )
+      })}
+
+      {showArrows && (
+        <>
+          <button
+            onClick={() => setCurrent((p) => (p - 1 + total) % total)}
+            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/80 p-2 text-slate-700 shadow backdrop-blur transition hover:bg-white"
+            aria-label="Previous"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={() => setCurrent((p) => (p + 1) % total)}
+            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/80 p-2 text-slate-700 shadow backdrop-blur transition hover:bg-white"
+            aria-label="Next"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      )}
+
+      {showDots && (
+        <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-2.5 w-2.5 rounded-full transition-all ${i === current ? 'scale-110 bg-[#2563eb]' : 'bg-white/70'}`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+      </div>
+    </div>
+  )
+}
+
+function FloatingStatCard({
+  card,
+}: {
+  card: NonNullable<ShowcaseData['floatingCards']>[number]
+}) {
+  const theme = showcaseThemeMap[(card.colorTheme as ColorTheme) || 'blue']
+  const pos = floatingPositionClasses[card.position || 'topLeft']
+  return (
+    <div
+      className={`absolute ${pos} z-20 flex animate-float items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_32px_rgba(15,23,42,0.1)]`}
+    >
+      <div>
+        <p className="text-[12px] font-medium text-slate-500">{card.label}</p>
+        <p className="font-heading mt-0.5 text-[22px] font-extrabold text-[#0f172a]">
+          {card.value}
+          {card.suffix ? <span className={`ml-1 align-middle text-[12px] font-semibold ${theme.value}`}>{card.suffix}</span> : null}
+        </p>
+      </div>
+      {card.icon ? (
+        <span className={`flex h-11 w-11 items-center justify-center rounded-full ${theme.circle}`}>
+          <DynamicIcon name={card.icon} size={20} className={theme.icon} />
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
+function SplitShowcaseHero({ showcase }: { showcase?: ShowcaseData }) {
+  if (!showcase) return null
+
+  const eyebrow = showcase.eyebrow
+  const buttons = showcase.buttons || []
+  const trustBadges = showcase.trustBadges || []
+  const visualType = showcase.visualType || 'illustration'
+  const visualSlides = showcase.visualSlides || []
+  const floatingEnabled = showcase.showFloatingCards !== false
+  const floatingCards = showcase.floatingCards || []
+
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#eef4fd] via-[#f2f7fd] to-[#f8fbfe]">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pt-14 pb-20 lg:grid-cols-2 lg:px-12">
+        {/* Left */}
+        <div className="animate-fade-up">
+          {eyebrow?.enabled !== false && (eyebrow?.text || eyebrow?.icon) && (
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
+              {eyebrow?.icon ? <DynamicIcon name={eyebrow.icon} size={16} className="text-[#2563eb]" /> : null}
+              {eyebrow?.text ? <span className="text-[13px] font-medium text-[#0f172a]">{eyebrow.text}</span> : null}
+            </div>
+          )}
+
+          {hasShowcaseRichText(showcase.title) && (
+            <div className="cms-richtext mt-7 [&_h1]:font-heading [&_h1]:text-[40px] [&_h1]:font-extrabold [&_h1]:leading-[1.08] [&_h1]:tracking-tight [&_h1]:text-[#0f172a] md:[&_h1]:text-[56px] [&_h2]:font-heading [&_h2]:text-[34px] [&_h2]:font-extrabold [&_h2]:leading-[1.1] [&_h2]:text-[#0f172a]">
+              <RichText data={showcase.title} />
+            </div>
+          )}
+
+          {hasShowcaseRichText(showcase.subtitle) && (
+            <div className="cms-richtext mt-6 max-w-md text-[17px] leading-relaxed text-[#475569] [&_p]:text-[#475569]">
+              <RichText data={showcase.subtitle} />
+            </div>
+          )}
+
+          {buttons.length > 0 && (
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              {buttons.map((btn) => (
+                <a
+                  key={btn.id || btn.url}
+                  href={btn.url}
+                  target={btn.openInNewTab ? '_blank' : undefined}
+                  rel={btn.openInNewTab ? 'noopener noreferrer' : undefined}
+                  className={`group inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold transition-colors duration-200 ${showcaseBtnVariants[btn.variant || 'primary']}`}
+                >
+                  {btn.label}
+                  {btn.icon ? (
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">
+                      <DynamicIcon name={btn.icon} size={16} />
+                    </span>
+                  ) : null}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {trustBadges.length > 0 && (
+            <div className="mt-10 flex flex-wrap gap-3">
+              {trustBadges.map((badge, i) => {
+                const theme = showcaseThemeMap[(badge.colorTheme as ColorTheme) || 'blue']
+                return (
+                  <div
+                    key={badge.id || i}
+                    className="flex items-center gap-2 rounded-full border border-slate-100 bg-white/90 py-1.5 pl-1.5 pr-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  >
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-full ${theme.circle} ${theme.icon}`}>
+                      {badge.icon ? <DynamicIcon name={badge.icon} size={16} /> : null}
+                    </span>
+                    <span className="text-[12.5px] font-semibold text-[#0f172a]">{badge.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Right */}
+        <div className="relative animate-fade-up" style={{ animationDelay: '0.15s' }}>
+          {visualType === 'mediaSlider' && visualSlides.length > 0 ? (
+            <ShowcaseMediaSliderView slides={visualSlides} settings={showcase.sliderSettings} />
+          ) : (
+            <div className="relative">
+              <div
+                className="absolute inset-0 -m-8 bg-gradient-to-br from-[#dbeafe] to-[#eff6ff]"
+                style={{ borderRadius: '50%' }}
+              />
+              <div className="relative">
+                <SchoolIllustration />
+              </div>
+            </div>
+          )}
+
+          {floatingEnabled &&
+            floatingCards.map((card, i) => <FloatingStatCard key={card.id || i} card={card} />)}
+        </div>
+      </div>
+    </section>
   )
 }

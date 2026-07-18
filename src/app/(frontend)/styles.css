@@ -3,10 +3,23 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-heading: var(--font-plus-jakarta), var(--font-inter), ui-sans-serif, sans-serif;
   --color-warning-500: var(--cms-accent, #FFAA01);
   --color-primary-blue: var(--cms-primary, #1A73E9);
   --animate-marquee: marquee linear infinite;
   --animate-fade-in-up: fadeInUp 0.6s ease-out both;
+  --animate-fade-up: fade-up 0.7s ease-out both;
+  --animate-float: float 4.5s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes marquee {

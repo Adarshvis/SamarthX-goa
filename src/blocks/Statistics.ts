@@ -1,11 +1,32 @@
 import type { Block, Field } from 'payload'
-import { sectionHeadingFields, iconField, colorField } from './shared'
+import { iconField, colorField } from './shared'
 
 export const Statistics: Block = {
   slug: 'statistics',
   labels: { singular: 'Statistics / Impact', plural: 'Statistics / Impact' },
   fields: [
-    ...sectionHeadingFields,
+    {
+      name: 'sectionHeading',
+      type: 'richText',
+      label: 'Section Heading',
+      admin: { description: 'Section heading (rich text — style or color words as needed)' },
+    },
+    {
+      name: 'sectionDescription',
+      type: 'richText',
+      label: 'Section Description',
+      admin: { description: 'Optional description below the heading (rich text)' },
+    },
+    {
+      name: 'headingAlignment',
+      type: 'select',
+      defaultValue: 'center',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+    },
     {
       name: 'layout',
       type: 'select',
@@ -13,6 +34,7 @@ export const Statistics: Block = {
       required: true,
       options: [
         { label: 'Card Grid (colored icon cards)', value: 'cardGrid' },
+        { label: 'Impact Cards (count-up + growth pills)', value: 'impact' },
         { label: 'Circular Rings (donut progress)', value: 'circularRings' },
         { label: 'Interlocking Rings (ribbon weave)', value: 'interlockingRings' },
       ],
@@ -58,7 +80,8 @@ export const Statistics: Block = {
           name: 'description',
           type: 'text',
           admin: {
-            description: 'Short description shown below the stat (optional)',
+            description:
+              'Short description shown below the stat (optional). In the Impact layout this becomes the growth pill text, e.g. "12.5% vs last year".',
           },
         },
         {

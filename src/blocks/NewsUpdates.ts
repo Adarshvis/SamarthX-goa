@@ -1,11 +1,32 @@
 import type { Block } from 'payload'
-import { sectionHeadingFields, iconField, colorField } from './shared'
+import { iconField, colorField } from './shared'
 
 export const NewsUpdates: Block = {
   slug: 'newsUpdates',
   labels: { singular: 'News & Updates', plural: 'News & Updates' },
   fields: [
-    ...sectionHeadingFields,
+    {
+      name: 'sectionHeading',
+      type: 'richText',
+      label: 'Section Heading',
+      admin: { description: 'Section heading (rich text — style or color words as needed)' },
+    },
+    {
+      name: 'sectionDescription',
+      type: 'richText',
+      label: 'Section Description',
+      admin: { description: 'Optional description below the heading (rich text)' },
+    },
+    {
+      name: 'headingAlignment',
+      type: 'select',
+      defaultValue: 'center',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
+      ],
+    },
     {
       name: 'layout',
       type: 'select',

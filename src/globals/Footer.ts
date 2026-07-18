@@ -4,6 +4,7 @@ import { publicAccess, adminAccess } from '../access/roles'
 export const Footer: GlobalConfig = {
   slug: 'footer',
   label: 'Footer',
+  lockDocuments: false,
   access: {
     read: publicAccess,
     update: adminAccess,

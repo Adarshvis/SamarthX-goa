@@ -1,10 +1,8 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import config from '@/payload.config'
 import { getPayload } from '@/lib/payload'
-import RichText from '../../components/ui/RichText'
-import PageBanner from '../../components/PageBanner'
+import ArticleLayout from '../../components/ArticleLayout'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -75,33 +73,24 @@ export default async function NewsDetailPage({ params }: PageProps) {
       ? article.featuredImage.alt
       : article.title
 
+  const base = process.env.NEXT_PUBLIC_APP_URL || ''
+  const shareUrl = base ? `${base}/news/${slug}` : ''
+
   return (
     <div className="cms-page-shell">
-      <PageBanner title={article.title} slug={slug} />
-      <section className="py-14 px-6">
-        <div className="max-w-4xl mx-auto bg-white rounded-xl border border-gray-200 p-8 md:p-10">
-          {article.category ? (
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700 mb-2">
-              {article.category}
-            </p>
-          ) : null}
-          {article.publishedDate ? (
-            <p className="text-sm text-gray-500 mb-6">{formatDate(article.publishedDate)}</p>
-          ) : null}
-
-          {featuredImageUrl ? (
-            <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden mb-8">
-              <Image src={featuredImageUrl} alt={featuredImageAlt} fill className="object-cover" />
-            </div>
-          ) : null}
-
-          {article.excerpt ? (
-            <p className="text-lg text-gray-700 leading-relaxed mb-8">{article.excerpt}</p>
-          ) : null}
-
-          {article.content ? <RichText data={article.content} /> : null}
-        </div>
-      </section>
+      <ArticleLayout
+        title={article.title}
+        category={article.category}
+        date={formatDate(article.publishedDate)}
+        imageUrl={featuredImageUrl}
+        imageAlt={featuredImageAlt}
+        excerpt={article.excerpt}
+        content={article.content}
+        tags={article.tags}
+        backHref="/news"
+        backLabel="Back to News"
+        shareUrl={shareUrl}
+      />
     </div>
   )
 }

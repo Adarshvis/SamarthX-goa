@@ -1,11 +1,22 @@
 'use client'
 
 import React from 'react'
+import { TrendingUp } from 'lucide-react'
 import DynamicIcon from '../ui/DynamicIcon'
-import SectionHeading from '../ui/SectionHeading'
+import RichText from '../ui/RichText'
 import ScrollReveal from '../ui/ScrollReveal'
 import { useInView } from '../ui/useInView'
 import { useCountUp } from '../ui/useCountUp'
+
+const headingAlignClasses: Record<string, string> = {
+  left: 'text-left',
+  center: 'text-center mx-auto',
+  right: 'text-right ml-auto',
+}
+
+function hasRichContent(data: any): boolean {
+  return Boolean(data?.root?.children?.length)
+}
 
 interface StatData {
   label: string
@@ -22,10 +33,10 @@ interface StatData {
 }
 
 interface StatisticsBlockProps {
-  sectionHeading?: string | null
-  sectionDescription?: string | null
+  sectionHeading?: any
+  sectionDescription?: any
   headingAlignment?: 'left' | 'center' | 'right' | null
-  layout?: 'cardGrid' | 'circularRings' | 'interlockingRings' | null
+  layout?: 'cardGrid' | 'impact' | 'circularRings' | 'interlockingRings' | null
   stats: StatData[]
   backgroundColor?: string | null
   cardBgColor?: string | null
@@ -412,6 +423,80 @@ function InterlockingRingsLayout({
   )
 }
 
+// ── Impact Card Item (count-up number, arc, growth pill) ──
+function ImpactCardItem({
+  stat,
+  cardBgColor,
+  hoverZoom,
+  animate,
+}: {
+  stat: StatData
+  cardBgColor: string
+  hoverZoom: boolean
+  animate: boolean
+}) {
+  const color = stat.iconColor || '#2563eb'
+  // Circle background is a light tint of the icon color so the icon always
+  // matches its background. An explicit iconBgColor (other than the default
+  // light-blue placeholder) still overrides it.
+  const softBg =
+    stat.iconBgColor && stat.iconBgColor.toUpperCase() !== '#EFF6FF'
+      ? stat.iconBgColor
+      : `color-mix(in srgb, ${color} 14%, white)`
+
+  return (
+    <div
+      className={`rounded-3xl px-7 py-10 text-center shadow-[0_10px_36px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-300 ${
+        hoverZoom ? 'hover:-translate-y-1.5 hover:shadow-[0_20px_48px_rgba(15,23,42,0.1)]' : 'hover:shadow-md'
+      }`}
+      style={{ backgroundColor: cardBgColor }}
+    >
+      {stat.icon && (
+        <div className="relative mx-auto h-28 w-28">
+          <div
+            className="flex h-full w-full items-center justify-center rounded-full"
+            style={{ backgroundColor: softBg }}
+          >
+            <DynamicIcon name={stat.icon} size={44} color={color} />
+          </div>
+          <svg className="absolute inset-0 h-full w-full -rotate-[20deg]" viewBox="0 0 112 112">
+            <path
+              d="M20 92 A 46 46 0 0 0 92 92"
+              fill="none"
+              stroke={color}
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      )}
+
+      <p className="font-heading mt-6 text-[38px] font-extrabold" style={{ color }}>
+        <AnimatedNumber
+          value={stat.numericValue}
+          prefix={stat.prefix}
+          suffix={stat.suffix}
+          animate={animate}
+        />
+      </p>
+
+      <div className="mx-auto mt-4 h-px w-16 bg-slate-200" />
+
+      <p className="font-heading mt-4 text-[19px] font-bold text-slate-900">{stat.label}</p>
+
+      {stat.description && (
+        <div
+          className="mt-6 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13.5px] font-semibold"
+          style={{ backgroundColor: softBg, color }}
+        >
+          <TrendingUp className="h-4 w-4" />
+          {stat.description}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Main Block ──
 export default function StatisticsBlock(props: StatisticsBlockProps) {
   const {
@@ -446,11 +531,20 @@ export default function StatisticsBlock(props: StatisticsBlockProps) {
       style={{ backgroundColor: backgroundColor || '#FFFFFF' }}
     >
       <div className="max-w-7xl mx-auto">
-        <SectionHeading
-          heading={sectionHeading}
-          description={sectionDescription}
-          alignment={headingAlignment}
-        />
+        {(hasRichContent(sectionHeading) || hasRichContent(sectionDescription)) && (
+          <div className={`mb-12 max-w-3xl ${headingAlignClasses[headingAlignment || 'center']}`}>
+            {hasRichContent(sectionHeading) && (
+              <div className="cms-richtext [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:text-3xl [&_h2]:md:text-4xl [&_h2]:font-bold [&_h2]:text-gray-900">
+                <RichText data={sectionHeading} />
+              </div>
+            )}
+            {hasRichContent(sectionDescription) && (
+              <div className="cms-richtext mt-3 text-lg text-gray-500 [&_p]:text-gray-500">
+                <RichText data={sectionDescription} />
+              </div>
+            )}
+          </div>
+        )}
 
         {style === 'interlockingRings' ? (
           <InterlockingRingsLayout
@@ -467,6 +561,13 @@ export default function StatisticsBlock(props: StatisticsBlockProps) {
               <ScrollReveal key={stat.id || i} delay={i * 100}>
                 {style === 'circularRings' ? (
                   <CircularRingItem stat={stat} hoverZoom={hoverZoom} animate={animate} />
+                ) : style === 'impact' ? (
+                  <ImpactCardItem
+                    stat={stat}
+                    cardBgColor={cardBgColor || '#FFFFFF'}
+                    hoverZoom={hoverZoom}
+                    animate={animate}
+                  />
                 ) : (
                   <CardGridItem
                     stat={stat}

@@ -21,6 +21,14 @@ import * as migration_20260413_140000_add_goa_snapshot_show_apply_button from '.
 import * as migration_20260415_033049 from './20260415_033049';
 import * as migration_20260415_034422 from './20260415_034422';
 import * as migration_20260415_041922 from './20260415_041922';
+import * as migration_20260717_184132_add_hero_split_showcase from './20260717_184132_add_hero_split_showcase';
+import * as migration_20260718_055723_verify_showcase_flatten from './20260718_055723_verify_showcase_flatten';
+import * as migration_20260718_072604_add_stats_bar_block from './20260718_072604_add_stats_bar_block';
+import * as migration_20260718_075022_add_statistics_impact_layout from './20260718_075022_add_statistics_impact_layout';
+import * as migration_20260718_091328_statistics_richtext_heading from './20260718_091328_statistics_richtext_heading';
+import * as migration_20260718_095951_add_stats_bar_description from './20260718_095951_add_stats_bar_description';
+import * as migration_20260718_100312_newsupdates_richtext_heading from './20260718_100312_newsupdates_richtext_heading';
+import * as migration_20260718_112609_add_team_page from './20260718_112609_add_team_page';
 
 export const migrations = [
   {
@@ -136,6 +144,46 @@ export const migrations = [
   {
     up: migration_20260415_041922.up,
     down: migration_20260415_041922.down,
-    name: '20260415_041922'
+    name: '20260415_041922',
+  },
+  {
+    up: migration_20260717_184132_add_hero_split_showcase.up,
+    down: migration_20260717_184132_add_hero_split_showcase.down,
+    name: '20260717_184132_add_hero_split_showcase',
+  },
+  {
+    up: migration_20260718_055723_verify_showcase_flatten.up,
+    down: migration_20260718_055723_verify_showcase_flatten.down,
+    name: '20260718_055723_verify_showcase_flatten',
+  },
+  {
+    up: migration_20260718_072604_add_stats_bar_block.up,
+    down: migration_20260718_072604_add_stats_bar_block.down,
+    name: '20260718_072604_add_stats_bar_block',
+  },
+  {
+    up: migration_20260718_075022_add_statistics_impact_layout.up,
+    down: migration_20260718_075022_add_statistics_impact_layout.down,
+    name: '20260718_075022_add_statistics_impact_layout',
+  },
+  {
+    up: migration_20260718_091328_statistics_richtext_heading.up,
+    down: migration_20260718_091328_statistics_richtext_heading.down,
+    name: '20260718_091328_statistics_richtext_heading',
+  },
+  {
+    up: migration_20260718_095951_add_stats_bar_description.up,
+    down: migration_20260718_095951_add_stats_bar_description.down,
+    name: '20260718_095951_add_stats_bar_description',
+  },
+  {
+    up: migration_20260718_100312_newsupdates_richtext_heading.up,
+    down: migration_20260718_100312_newsupdates_richtext_heading.down,
+    name: '20260718_100312_newsupdates_richtext_heading',
+  },
+  {
+    up: migration_20260718_112609_add_team_page.up,
+    down: migration_20260718_112609_add_team_page.down,
+    name: '20260718_112609_add_team_page'
   },
 ];

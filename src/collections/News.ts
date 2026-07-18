@@ -3,6 +3,7 @@ import { editorAccess, schoolAdminAccess, publishedOrEditor } from '../access/ro
 
 export const News: CollectionConfig = {
   slug: 'news',
+  lockDocuments: false,
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'category', 'status', 'publishedDate', 'updatedAt'],

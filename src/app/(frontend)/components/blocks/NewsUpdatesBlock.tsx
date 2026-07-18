@@ -3,9 +3,45 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import DynamicIcon from '../ui/DynamicIcon'
-import SectionHeading from '../ui/SectionHeading'
+import RichText from '../ui/RichText'
 import ScrollReveal from '../ui/ScrollReveal'
 import { ArrowRight, Calendar } from 'lucide-react'
+
+const headingAlignClasses: Record<string, string> = {
+  left: 'text-left',
+  center: 'text-center mx-auto',
+  right: 'text-right ml-auto',
+}
+
+function hasRichContent(data: any): boolean {
+  return Boolean(data?.root?.children?.length)
+}
+
+function SectionRichHeading({
+  heading,
+  description,
+  alignment,
+}: {
+  heading?: any
+  description?: any
+  alignment?: 'left' | 'center' | 'right' | null
+}) {
+  if (!hasRichContent(heading) && !hasRichContent(description)) return null
+  return (
+    <div className={`mb-12 max-w-3xl ${headingAlignClasses[alignment || 'center']}`}>
+      {hasRichContent(heading) && (
+        <div className="cms-richtext [&_h1]:text-3xl [&_h1]:md:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:text-3xl [&_h2]:md:text-4xl [&_h2]:font-bold [&_h2]:text-gray-900">
+          <RichText data={heading} />
+        </div>
+      )}
+      {hasRichContent(description) && (
+        <div className="cms-richtext mt-3 text-lg text-gray-500 [&_p]:text-gray-500">
+          <RichText data={description} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface ArticleData {
   title: string
@@ -20,8 +56,8 @@ interface ArticleData {
 }
 
 interface NewsUpdatesBlockProps {
-  sectionHeading?: string | null
-  sectionDescription?: string | null
+  sectionHeading?: any
+  sectionDescription?: any
   headingAlignment?: 'left' | 'center' | 'right' | null
   layout?: 'cards' | 'spotlight' | null
   entryType?: 'manual' | 'collection' | null
@@ -325,7 +361,7 @@ export default function NewsUpdatesBlock(props: NewsUpdatesBlockProps) {
     return (
       <section className="py-16 px-6" style={{ backgroundColor: backgroundColor || 'var(--bg-muted)' }}>
         <div className="max-w-7xl mx-auto">
-          <SectionHeading
+          <SectionRichHeading
             heading={sectionHeading}
             description={sectionDescription}
             alignment={headingAlignment}
@@ -344,7 +380,7 @@ export default function NewsUpdatesBlock(props: NewsUpdatesBlockProps) {
   return (
     <section className="py-16 px-6" style={{ backgroundColor: backgroundColor || 'var(--bg-muted)' }}>
       <div className="max-w-7xl mx-auto">
-        <SectionHeading
+        <SectionRichHeading
           heading={sectionHeading}
           description={sectionDescription}
           alignment={headingAlignment}

@@ -72,6 +72,7 @@ export interface Config {
     pages: Page;
     news: News;
     blogs: Blog;
+    'team-page': TeamPage;
     resumes: Resume;
     'job-applications': JobApplication;
     forms: Form;
@@ -88,6 +89,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     blogs: BlogsSelect<false> | BlogsSelect<true>;
+    'team-page': TeamPageSelect<false> | TeamPageSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -227,8 +229,8 @@ export interface Page {
   publishedDate?: string | null;
   layout: (
     | {
-        mode: 'single' | 'carousel';
-        layout: 'fullWidth' | 'fullscreenOverlayCarousel' | 'split' | 'contained';
+        mode?: ('single' | 'carousel') | null;
+        layout: 'fullWidth' | 'fullscreenOverlayCarousel' | 'split' | 'splitShowcase' | 'contained';
         splitDirection?: ('textLeft' | 'textRight') | null;
         /**
          * Hero height in pixels (e.g. 600)
@@ -291,6 +293,131 @@ export interface Page {
           showArrows?: boolean | null;
           showDots?: boolean | null;
         };
+        showcaseEyebrow?: {
+          enabled?: boolean | null;
+          /**
+           * Badge icon (Lucide)
+           */
+          icon?: string | null;
+          /**
+           * e.g. "Building Better Education, Together"
+           */
+          text?: string | null;
+        };
+        /**
+         * Main heading. Use the color tool to highlight words.
+         */
+        showcaseTitle?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Supporting text below the heading.
+         */
+        showcaseSubtitle?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        showcaseButtons?:
+          | {
+              label: string;
+              url: string;
+              variant?: ('primary' | 'secondary' | 'outline') | null;
+              /**
+               * Button icon (Lucide)
+               */
+              icon?: string | null;
+              openInNewTab?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        showcaseTrustBadges?:
+          | {
+              /**
+               * Badge icon (Lucide)
+               */
+              icon?: string | null;
+              label: string;
+              colorTheme?: ('blue' | 'green' | 'purple' | 'orange') | null;
+              id?: string | null;
+            }[]
+          | null;
+        showcaseVisualType?: ('illustration' | 'mediaSlider') | null;
+        /**
+         * Add one or more media items. Multiple items become a slider.
+         */
+        showcaseVisualSlides?:
+          | {
+              mediaType: 'image' | 'video' | 'externalVideo' | 'animation';
+              image?: (number | null) | Media;
+              /**
+               * URL to self-hosted video file (mp4, webm)
+               */
+              videoUrl?: string | null;
+              /**
+               * Poster/thumbnail image for the video
+               */
+              videoPoster?: (number | null) | Media;
+              /**
+               * YouTube or Vimeo URL
+               */
+              externalVideoUrl?: string | null;
+              /**
+               * URL to Lottie JSON file or GIF image
+               */
+              animationUrl?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        showcaseSliderSettings?: {
+          autoPlay?: boolean | null;
+          /**
+           * Interval in milliseconds
+           */
+          autoPlayInterval?: number | null;
+          showArrows?: boolean | null;
+          showDots?: boolean | null;
+        };
+        showcaseShowFloatingCards?: boolean | null;
+        showcaseFloatingCards?:
+          | {
+              /**
+               * Card icon (Lucide)
+               */
+              icon?: string | null;
+              label: string;
+              value: string;
+              /**
+               * e.g. "↑ 12.5%" or "New"
+               */
+              suffix?: string | null;
+              colorTheme?: ('blue' | 'green' | 'purple' | 'orange') | null;
+              position?: ('topLeft' | 'midLeft' | 'topRight' | 'bottomRight') | null;
+              id?: string | null;
+            }[]
+          | null;
         singleSlide?: {
           mediaType: 'textOnly' | 'image' | 'video' | 'externalVideo' | 'animation' | 'dataViz';
           image?: (number | null) | Media;
@@ -558,18 +685,46 @@ export interface Page {
       }
     | {
         /**
-         * Section heading displayed above this block
+         * Section heading (rich text — style or color words as needed)
          */
-        sectionHeading?: string | null;
+        sectionHeading?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         /**
-         * Optional description below the heading
+         * Optional description below the heading (rich text)
          */
-        sectionDescription?: string | null;
+        sectionDescription?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         headingAlignment?: ('left' | 'center' | 'right') | null;
         /**
          * Choose between card grid layout or circular ring/donut layout
          */
-        layout: 'cardGrid' | 'circularRings' | 'interlockingRings';
+        layout: 'cardGrid' | 'impact' | 'circularRings' | 'interlockingRings';
         stats: {
           /**
            * e.g. "Students Enrolled", "Schools", "Pass Rate"
@@ -604,7 +759,7 @@ export interface Page {
            */
           iconBgColor?: string | null;
           /**
-           * Short description shown below the stat (optional)
+           * Short description shown below the stat (optional). In the Impact layout this becomes the growth pill text, e.g. "12.5% vs last year".
            */
           description?: string | null;
           /**
@@ -648,13 +803,41 @@ export interface Page {
       }
     | {
         /**
-         * Section heading displayed above this block
+         * Section heading (rich text — style or color words as needed)
          */
-        sectionHeading?: string | null;
+        sectionHeading?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         /**
-         * Optional description below the heading
+         * Optional description below the heading (rich text)
          */
-        sectionDescription?: string | null;
+        sectionDescription?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         headingAlignment?: ('left' | 'center' | 'right') | null;
         /**
          * Choose between a card grid or a featured spotlight layout
@@ -1354,14 +1537,99 @@ export interface Page {
         sectionDescription?: string | null;
         headingAlignment?: ('left' | 'center' | 'right') | null;
         columns?: ('2' | '3' | '4') | null;
+        showSocialLinks?: boolean | null;
         members: {
+          photo?: (number | null) | Media;
           name: string;
+          /**
+           * URL slug for the profile page. Auto-generated from name if left empty.
+           */
+          slug?: string | null;
           /**
            * e.g. "Principal", "Math Teacher", "HOD Science"
            */
           role?: string | null;
-          photo?: (number | null) | Media;
           bio?: string | null;
+          /**
+           * External profile URL. Leave empty to auto-link to /team/{slug}.
+           */
+          profileLink?: string | null;
+          socialLinks?:
+            | {
+                platform:
+                  | 'linkedin'
+                  | 'twitter-x'
+                  | 'github'
+                  | 'instagram'
+                  | 'facebook'
+                  | 'youtube'
+                  | 'google'
+                  | 'globe'
+                  | 'envelope';
+                url: string;
+                id?: string | null;
+              }[]
+            | null;
+          biography?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          office?: string | null;
+          researchInterests?:
+            | {
+                interest: string;
+                id?: string | null;
+              }[]
+            | null;
+          education?:
+            | {
+                degree: string;
+                institution: string;
+                year?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          experience?:
+            | {
+                position: string;
+                organization: string;
+                duration?: string | null;
+                expDescription?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          awards?:
+            | {
+                title: string;
+                year?: string | null;
+                organization?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          courses?:
+            | {
+                courseName: string;
+                courseCode?: string | null;
+                semester?: string | null;
+                courseDescription?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          publications?:
+            | {
+                title: string;
+                journal?: string | null;
+                year?: string | null;
+                link?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          academicLinks?:
+            | {
+                platform: 'google-scholar' | 'researchgate' | 'orcid' | 'academia' | 'scopus' | 'wos' | 'other';
+                url: string;
+                id?: string | null;
+              }[]
+            | null;
           id?: string | null;
         }[];
         id?: string | null;
@@ -2088,6 +2356,42 @@ export interface Page {
         blockName?: string | null;
         blockType: 'contactSection';
       }
+    | {
+        /**
+         * Each item can show a value + label, or just a label (leave value empty).
+         */
+        items?:
+          | {
+              /**
+               * Select a Lucide icon
+               */
+              icon?: string | null;
+              /**
+               * Big stat value, e.g. "368+". Leave empty to show only the label.
+               */
+              value?: string | null;
+              /**
+               * Label / title, e.g. "Schools Onboarded" or "Data-Driven Decisions"
+               */
+              label: string;
+              /**
+               * Optional supporting line shown below the label (e.g. "Actionable insights for better governance")
+               */
+              description?: string | null;
+              colorTheme?: ('blue' | 'green' | 'purple' | 'orange') | null;
+              id?: string | null;
+            }[]
+          | null;
+        columns?: ('auto' | '2' | '3' | '4') | null;
+        showDividers?: boolean | null;
+        /**
+         * Pick a color or enter hex value
+         */
+        backgroundColor?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'statsBar';
+      }
   )[];
   updatedAt: string;
   createdAt: string;
@@ -2424,6 +2728,238 @@ export interface Blog {
   createdAt: string;
 }
 /**
+ * Team / Faculty listing pages with member profiles
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-page".
+ */
+export interface TeamPage {
+  id: number;
+  /**
+   * Internal identifier (e.g. "Main Team Page")
+   */
+  pageName: string;
+  status: 'active' | 'inactive';
+  pageTitle: {
+    /**
+     * Page heading (e.g. "Our Team")
+     */
+    title: string;
+    /**
+     * Small badge text above the title
+     */
+    eyebrow?: string | null;
+    description?: string | null;
+  };
+  /**
+   * URL path (e.g. "team" → /team)
+   */
+  slug: string;
+  layout?:
+    | (
+        | {
+            /**
+             * Section heading displayed above this block
+             */
+            sectionHeading?: string | null;
+            /**
+             * Optional description below the heading
+             */
+            sectionDescription?: string | null;
+            headingAlignment?: ('left' | 'center' | 'right') | null;
+            columns?: ('2' | '3' | '4') | null;
+            showSocialLinks?: boolean | null;
+            members: {
+              photo?: (number | null) | Media;
+              name: string;
+              /**
+               * URL slug for the profile page. Auto-generated from name if left empty.
+               */
+              slug?: string | null;
+              /**
+               * e.g. "Principal", "Math Teacher", "HOD Science"
+               */
+              role?: string | null;
+              bio?: string | null;
+              /**
+               * External profile URL. Leave empty to auto-link to /team/{slug}.
+               */
+              profileLink?: string | null;
+              socialLinks?:
+                | {
+                    platform:
+                      | 'linkedin'
+                      | 'twitter-x'
+                      | 'github'
+                      | 'instagram'
+                      | 'facebook'
+                      | 'youtube'
+                      | 'google'
+                      | 'globe'
+                      | 'envelope';
+                    url: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              biography?: string | null;
+              email?: string | null;
+              phone?: string | null;
+              office?: string | null;
+              researchInterests?:
+                | {
+                    interest: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              education?:
+                | {
+                    degree: string;
+                    institution: string;
+                    year?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              experience?:
+                | {
+                    position: string;
+                    organization: string;
+                    duration?: string | null;
+                    expDescription?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              awards?:
+                | {
+                    title: string;
+                    year?: string | null;
+                    organization?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              courses?:
+                | {
+                    courseName: string;
+                    courseCode?: string | null;
+                    semester?: string | null;
+                    courseDescription?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              publications?:
+                | {
+                    title: string;
+                    journal?: string | null;
+                    year?: string | null;
+                    link?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              academicLinks?:
+                | {
+                    platform: 'google-scholar' | 'researchgate' | 'orcid' | 'academia' | 'scopus' | 'wos' | 'other';
+                    url: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'teamGrid';
+          }
+        | {
+            /**
+             * Section heading displayed above this block
+             */
+            sectionHeading?: string | null;
+            /**
+             * Optional description below the heading
+             */
+            sectionDescription?: string | null;
+            headingAlignment?: ('left' | 'center' | 'right') | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            maxWidth?: ('narrow' | 'medium' | 'full') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richContent';
+          }
+        | {
+            /**
+             * Section heading displayed above this block
+             */
+            sectionHeading?: string | null;
+            /**
+             * Optional description below the heading
+             */
+            sectionDescription?: string | null;
+            headingAlignment?: ('left' | 'center' | 'right') | null;
+            /**
+             * CTA headline text
+             */
+            heading: string;
+            /**
+             * CTA description text
+             */
+            description?: string | null;
+            buttons?:
+              | {
+                  label: string;
+                  url: string;
+                  variant?: ('primary' | 'secondary' | 'outline') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            backgroundType?: ('color' | 'image') | null;
+            /**
+             * Pick background color
+             */
+            backgroundColor?: string | null;
+            backgroundImage?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+        | {
+            /**
+             * Section heading displayed above this block
+             */
+            sectionHeading?: string | null;
+            /**
+             * Optional description below the heading
+             */
+            sectionDescription?: string | null;
+            headingAlignment?: ('left' | 'center' | 'right') | null;
+            type: 'info' | 'success' | 'warning' | 'error';
+            message: string;
+            dismissible?: boolean | null;
+            link?: {
+              label?: string | null;
+              url?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'bannerAlert';
+          }
+      )[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Uploaded resume/CV files from job applicants
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2523,16 +3059,8 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'pages';
-        value: number | Page;
-      } | null)
-    | ({
-        relationTo: 'news';
-        value: number | News;
-      } | null)
-    | ({
-        relationTo: 'blogs';
-        value: number | Blog;
+        relationTo: 'team-page';
+        value: number | TeamPage;
       } | null)
     | ({
         relationTo: 'resumes';
@@ -2693,6 +3221,65 @@ export interface PagesSelect<T extends boolean = true> {
                     autoPlayInterval?: T;
                     showArrows?: T;
                     showDots?: T;
+                  };
+              showcaseEyebrow?:
+                | T
+                | {
+                    enabled?: T;
+                    icon?: T;
+                    text?: T;
+                  };
+              showcaseTitle?: T;
+              showcaseSubtitle?: T;
+              showcaseButtons?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    variant?: T;
+                    icon?: T;
+                    openInNewTab?: T;
+                    id?: T;
+                  };
+              showcaseTrustBadges?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    colorTheme?: T;
+                    id?: T;
+                  };
+              showcaseVisualType?: T;
+              showcaseVisualSlides?:
+                | T
+                | {
+                    mediaType?: T;
+                    image?: T;
+                    videoUrl?: T;
+                    videoPoster?: T;
+                    externalVideoUrl?: T;
+                    animationUrl?: T;
+                    id?: T;
+                  };
+              showcaseSliderSettings?:
+                | T
+                | {
+                    autoPlay?: T;
+                    autoPlayInterval?: T;
+                    showArrows?: T;
+                    showDots?: T;
+                  };
+              showcaseShowFloatingCards?: T;
+              showcaseFloatingCards?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    value?: T;
+                    suffix?: T;
+                    colorTheme?: T;
+                    position?: T;
+                    id?: T;
                   };
               singleSlide?:
                 | T
@@ -3271,13 +3858,83 @@ export interface PagesSelect<T extends boolean = true> {
               sectionDescription?: T;
               headingAlignment?: T;
               columns?: T;
+              showSocialLinks?: T;
               members?:
                 | T
                 | {
-                    name?: T;
-                    role?: T;
                     photo?: T;
+                    name?: T;
+                    slug?: T;
+                    role?: T;
                     bio?: T;
+                    profileLink?: T;
+                    socialLinks?:
+                      | T
+                      | {
+                          platform?: T;
+                          url?: T;
+                          id?: T;
+                        };
+                    biography?: T;
+                    email?: T;
+                    phone?: T;
+                    office?: T;
+                    researchInterests?:
+                      | T
+                      | {
+                          interest?: T;
+                          id?: T;
+                        };
+                    education?:
+                      | T
+                      | {
+                          degree?: T;
+                          institution?: T;
+                          year?: T;
+                          id?: T;
+                        };
+                    experience?:
+                      | T
+                      | {
+                          position?: T;
+                          organization?: T;
+                          duration?: T;
+                          expDescription?: T;
+                          id?: T;
+                        };
+                    awards?:
+                      | T
+                      | {
+                          title?: T;
+                          year?: T;
+                          organization?: T;
+                          id?: T;
+                        };
+                    courses?:
+                      | T
+                      | {
+                          courseName?: T;
+                          courseCode?: T;
+                          semester?: T;
+                          courseDescription?: T;
+                          id?: T;
+                        };
+                    publications?:
+                      | T
+                      | {
+                          title?: T;
+                          journal?: T;
+                          year?: T;
+                          link?: T;
+                          id?: T;
+                        };
+                    academicLinks?:
+                      | T
+                      | {
+                          platform?: T;
+                          url?: T;
+                          id?: T;
+                        };
                     id?: T;
                   };
               id?: T;
@@ -3631,6 +4288,25 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        statsBar?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    value?: T;
+                    label?: T;
+                    description?: T;
+                    colorTheme?: T;
+                    id?: T;
+                  };
+              columns?: T;
+              showDividers?: T;
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3680,6 +4356,168 @@ export interface BlogsSelect<T extends boolean = true> {
       };
   isFeatured?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-page_select".
+ */
+export interface TeamPageSelect<T extends boolean = true> {
+  pageName?: T;
+  status?: T;
+  pageTitle?:
+    | T
+    | {
+        title?: T;
+        eyebrow?: T;
+        description?: T;
+      };
+  slug?: T;
+  layout?:
+    | T
+    | {
+        teamGrid?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              columns?: T;
+              showSocialLinks?: T;
+              members?:
+                | T
+                | {
+                    photo?: T;
+                    name?: T;
+                    slug?: T;
+                    role?: T;
+                    bio?: T;
+                    profileLink?: T;
+                    socialLinks?:
+                      | T
+                      | {
+                          platform?: T;
+                          url?: T;
+                          id?: T;
+                        };
+                    biography?: T;
+                    email?: T;
+                    phone?: T;
+                    office?: T;
+                    researchInterests?:
+                      | T
+                      | {
+                          interest?: T;
+                          id?: T;
+                        };
+                    education?:
+                      | T
+                      | {
+                          degree?: T;
+                          institution?: T;
+                          year?: T;
+                          id?: T;
+                        };
+                    experience?:
+                      | T
+                      | {
+                          position?: T;
+                          organization?: T;
+                          duration?: T;
+                          expDescription?: T;
+                          id?: T;
+                        };
+                    awards?:
+                      | T
+                      | {
+                          title?: T;
+                          year?: T;
+                          organization?: T;
+                          id?: T;
+                        };
+                    courses?:
+                      | T
+                      | {
+                          courseName?: T;
+                          courseCode?: T;
+                          semester?: T;
+                          courseDescription?: T;
+                          id?: T;
+                        };
+                    publications?:
+                      | T
+                      | {
+                          title?: T;
+                          journal?: T;
+                          year?: T;
+                          link?: T;
+                          id?: T;
+                        };
+                    academicLinks?:
+                      | T
+                      | {
+                          platform?: T;
+                          url?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        richContent?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              content?: T;
+              maxWidth?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              heading?: T;
+              description?: T;
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    variant?: T;
+                    id?: T;
+                  };
+              backgroundType?: T;
+              backgroundColor?: T;
+              backgroundImage?: T;
+              id?: T;
+              blockName?: T;
+            };
+        bannerAlert?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              type?: T;
+              message?: T;
+              dismissible?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

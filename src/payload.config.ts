@@ -17,6 +17,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { News } from './collections/News'
 import { Blogs } from './collections/Blogs'
+import { TeamPage } from './collections/TeamPage'
 import { Resumes } from './collections/Resumes'
 import { JobApplications } from './collections/JobApplications'
 import { SiteSettings } from './globals/SiteSettings'
@@ -56,7 +57,7 @@ export default buildConfig({
       afterDashboard: ['@/components/admin/ApplicationsDashboardCard#default'],
     },
   },
-  collections: [Users, Media, Pages, News, Blogs, Resumes, JobApplications],
+  collections: [Users, Media, Pages, News, Blogs, TeamPage, Resumes, JobApplications],
   globals: [SiteSettings, Header, Footer],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
