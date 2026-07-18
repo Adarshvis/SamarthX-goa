@@ -52,7 +52,7 @@ export default function StatsBarBlock({
     <section className="px-6 py-12" style={{ backgroundColor: backgroundColor || undefined }}>
       <div className="mx-auto max-w-[1440px]">
         <div
-          className={`grid grid-cols-2 gap-y-8 rounded-3xl bg-white px-6 py-9 shadow-[0_16px_48px_rgba(15,23,42,0.07)] ${gridCols}`}
+          className={`grid grid-cols-1 gap-x-4 gap-y-8 rounded-3xl bg-white px-5 py-9 shadow-[0_16px_48px_rgba(15,23,42,0.07)] sm:grid-cols-2 sm:px-6 ${gridCols}`}
         >
           {items.map((item, i) => {
             const theme = themeMap[(item.colorTheme as ColorTheme) || 'blue']
@@ -63,16 +63,16 @@ export default function StatsBarBlock({
                 delay={i * 120}
                 className={showDividers && i !== 0 ? 'lg:border-l lg:border-slate-100' : ''}
               >
-                <div className="group flex cursor-default items-center justify-center gap-5 transition-transform duration-300 ease-out hover:-translate-y-1.5">
+                <div className="group flex cursor-default items-center justify-start gap-4 px-2 transition-transform duration-300 ease-out hover:-translate-y-1.5 sm:justify-center sm:gap-5">
                   {item.icon && (
                     <span
-                      className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${theme.circle} animate-float transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg`}
+                      className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${theme.circle} animate-float transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg sm:h-16 sm:w-16`}
                       style={{ animationDelay: `${i * 0.4}s`, boxShadow: `0 8px 20px -8px ${theme.fg}55` }}
                     >
                       <DynamicIcon name={item.icon} size={26} color={theme.fg} />
                     </span>
                   )}
-                  <div>
+                  <div className="min-w-0">
                     {hasValue ? (
                       <>
                         <p
