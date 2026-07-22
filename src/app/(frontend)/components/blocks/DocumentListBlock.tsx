@@ -102,12 +102,13 @@ function DocumentCard({
   onView: () => void
 }) {
   const url = fileUrl(doc.file)
+  const hasDescription = Boolean(doc.description && doc.description.trim())
 
   return (
     <div className="group flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
-      <div className="flex min-w-0 items-start gap-3.5">
+      <div className={`flex min-w-0 gap-3.5 ${hasDescription ? 'items-start' : 'items-center'}`}>
         <span
-          className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${hasDescription ? 'mt-0.5' : ''}`}
           style={{ backgroundColor: `${accent}14`, color: accent }}
         >
           {doc.icon ? <DynamicIcon name={doc.icon} size={20} /> : <FileText size={20} />}
@@ -124,7 +125,7 @@ function DocumentCard({
               </span>
             )}
           </div>
-          {doc.description && (
+          {hasDescription && (
             <p className="mt-1 text-[13.5px] leading-relaxed text-slate-500">{doc.description}</p>
           )}
         </div>
