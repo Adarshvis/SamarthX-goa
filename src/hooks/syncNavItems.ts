@@ -122,8 +122,22 @@ async function syncNavToHeader(payload: any) {
   })
 }
 
-export const syncNavAfterChange: CollectionAfterChangeHook = async ({ req }) => {
+// Fields that affect the navigation. A resync only makes sense when one of
+// these changes — content/layout edits should not rebuild the whole nav.
+const NAV_RELEVANT_FIELDS = ['title', 'slug', 'status', 'showInNav', 'navOrder'] as const
+
+export const syncNavAfterChange: CollectionAfterChangeHook = async ({
+  req,
+  doc,
+  previousDoc,
+  operation,
+}) => {
   try {
+    // Always sync on create; on update only when a nav-relevant field changed.
+    if (operation === 'update' && previousDoc) {
+      const changed = NAV_RELEVANT_FIELDS.some((field) => doc?.[field] !== previousDoc?.[field])
+      if (!changed) return
+    }
     await syncNavToHeader(req.payload)
   } catch (err) {
     req.payload.logger.error(`Failed to sync nav after change: ${err}`)
