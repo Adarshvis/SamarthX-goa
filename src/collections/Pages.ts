@@ -27,6 +27,7 @@ import { FormLayout } from '../blocks/FormLayout'
 import { BlogPosts } from '../blocks/BlogPosts'
 import { ContactSection } from '../blocks/ContactSection'
 import { StatsBar } from '../blocks/StatsBar'
+import { DocumentList } from '../blocks/DocumentList'
 import { GoaSchoolSnapshotBlock } from '../blocks/GoaSchoolSnapshotBlock'
 
 export const Pages: CollectionConfig = {
@@ -183,6 +184,7 @@ export const Pages: CollectionConfig = {
         BlogPosts,
         ContactSection,
         StatsBar,
+        DocumentList,
       ],
     },
   ],

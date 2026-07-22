@@ -29,6 +29,7 @@ import * as migration_20260718_091328_statistics_richtext_heading from './202607
 import * as migration_20260718_095951_add_stats_bar_description from './20260718_095951_add_stats_bar_description';
 import * as migration_20260718_100312_newsupdates_richtext_heading from './20260718_100312_newsupdates_richtext_heading';
 import * as migration_20260718_112609_add_team_page from './20260718_112609_add_team_page';
+import * as migration_20260722_103955_add_document_list_block from './20260722_103955_add_document_list_block';
 
 export const migrations = [
   {
@@ -184,6 +185,11 @@ export const migrations = [
   {
     up: migration_20260718_112609_add_team_page.up,
     down: migration_20260718_112609_add_team_page.down,
-    name: '20260718_112609_add_team_page'
+    name: '20260718_112609_add_team_page',
+  },
+  {
+    up: migration_20260722_103955_add_document_list_block.up,
+    down: migration_20260722_103955_add_document_list_block.down,
+    name: '20260722_103955_add_document_list_block'
   },
 ];

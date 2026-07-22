@@ -2392,6 +2392,51 @@ export interface Page {
         blockName?: string | null;
         blockType: 'statsBar';
       }
+    | {
+        /**
+         * Section heading displayed above this block
+         */
+        sectionHeading?: string | null;
+        /**
+         * Optional description below the heading
+         */
+        sectionDescription?: string | null;
+        headingAlignment?: ('left' | 'center' | 'right') | null;
+        documents: {
+          title: string;
+          /**
+           * Short line shown below the title
+           */
+          description?: string | null;
+          /**
+           * Upload a PDF (or any downloadable file)
+           */
+          file: number | Media;
+          /**
+           * Select a Lucide icon
+           */
+          icon?: string | null;
+          /**
+           * Optional small badge, e.g. "New" or "2024-25"
+           */
+          badge?: string | null;
+          id?: string | null;
+        }[];
+        columns?: ('1' | '2') | null;
+        enableView?: boolean | null;
+        enableDownload?: boolean | null;
+        /**
+         * Pick a color or enter hex value
+         */
+        accentColor?: string | null;
+        /**
+         * Pick a color or enter hex value
+         */
+        backgroundColor?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'documentList';
+      }
   )[];
   updatedAt: string;
   createdAt: string;
@@ -4303,6 +4348,30 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               columns?: T;
               showDividers?: T;
+              backgroundColor?: T;
+              id?: T;
+              blockName?: T;
+            };
+        documentList?:
+          | T
+          | {
+              sectionHeading?: T;
+              sectionDescription?: T;
+              headingAlignment?: T;
+              documents?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    file?: T;
+                    icon?: T;
+                    badge?: T;
+                    id?: T;
+                  };
+              columns?: T;
+              enableView?: T;
+              enableDownload?: T;
+              accentColor?: T;
               backgroundColor?: T;
               id?: T;
               blockName?: T;
