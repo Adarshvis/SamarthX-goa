@@ -95,7 +95,7 @@ export default function ProfileClient({ member }: { member: Member }) {
     <div className="cms-page-shell">
       <div className="mx-auto max-w-7xl px-6 pt-6">
         <Link
-          href="/team"
+          href="/goa/team"
           className="inline-flex items-center gap-2 text-sm font-medium transition-all hover:gap-3"
           style={{ color: PRIMARY }}
         >

@@ -1,24 +1,45 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
+// CMS pages are served under this base path (e.g. /goa/about-us). Home stays at /.
+const PAGE_PREFIX = '/goa'
+const pageUrlFor = (slug: string) => (slug === 'home' ? '/' : `${PAGE_PREFIX}/${slug}`)
+const legacyUrlFor = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
+
 async function syncNavToHeader(payload: any) {
   // 1. Fetch current header to preserve manual items and submenus
   const header = await payload.findGlobal({ slug: 'header', depth: 0 })
-  const existingNav = header.navItems || []
-  const hiddenPageUrls = new Set(
-    (header.navSyncHiddenPageUrls || [])
-      .map((item: { url?: string }) => item?.url)
-      .filter((url: unknown): url is string => typeof url === 'string' && url.length > 0),
-  )
-  const lastSyncedPageUrls = new Set(
-    (header.navSyncLastSyncedPageUrls || [])
-      .map((item: { url?: string }) => item?.url)
-      .filter((url: unknown): url is string => typeof url === 'string' && url.length > 0),
-  )
+  const rawExistingNav = header.navItems || []
 
   // 2. Fetch all pages so we can distinguish between page links and manual external links
   const allPages = await payload.find({ collection: 'pages', limit: 1000, depth: 0 })
   const allPageIds = new Set(allPages.docs.map((p: any) => p.id))
-  const allPageUrls = new Set(allPages.docs.map((p: any) => p.slug === 'home' ? '/' : `/${p.slug}`))
+
+  // Map both the new (/goa/slug) and legacy (/slug) page URLs to the canonical
+  // /goa URL. This lets us transition existing nav items from the old scheme to
+  // the new one without treating them as external links.
+  const urlNormalizeMap = new Map<string, string>()
+  for (const p of allPages.docs) {
+    const canonical = pageUrlFor(p.slug)
+    urlNormalizeMap.set(legacyUrlFor(p.slug), canonical)
+    urlNormalizeMap.set(canonical, canonical)
+  }
+  const normalizeUrl = (u: unknown): unknown =>
+    typeof u === 'string' && urlNormalizeMap.has(u) ? urlNormalizeMap.get(u) : u
+
+  // Normalise existing nav so any legacy /slug page links become /goa/slug.
+  const existingNav = rawExistingNav.map((item: any) => ({ ...item, url: normalizeUrl(item.url) }))
+  const allPageUrls = new Set(allPages.docs.map((p: any) => pageUrlFor(p.slug)))
+
+  const hiddenPageUrls = new Set(
+    (header.navSyncHiddenPageUrls || [])
+      .map((item: { url?: string }) => normalizeUrl(item?.url))
+      .filter((url: unknown): url is string => typeof url === 'string' && url.length > 0),
+  )
+  const lastSyncedPageUrls = new Set(
+    (header.navSyncLastSyncedPageUrls || [])
+      .map((item: { url?: string }) => normalizeUrl(item?.url))
+      .filter((url: unknown): url is string => typeof url === 'string' && url.length > 0),
+  )
 
   // 3. Filter out existing nav items that belong to pages (we will rebuild them). 
   // This leaves behind completely manual/external links so they don't get deleted!
@@ -43,9 +64,7 @@ async function syncNavToHeader(payload: any) {
     limit: 1000,
     depth: 0
   })
-  const activePageUrls = new Set(
-    activePages.docs.map((page: any) => (page.slug === 'home' ? '/' : `/${page.slug}`)),
-  )
+  const activePageUrls = new Set(activePages.docs.map((page: any) => pageUrlFor(page.slug)))
 
   // Detect page links removed manually from Header nav after previous sync and persist them as hidden.
   const currentPageUrlsInNav = new Set(
@@ -86,7 +105,7 @@ async function syncNavToHeader(payload: any) {
   })
 
   const pageNavItems = activePages.docs.map((page: any) => {
-    const url = page.slug === 'home' ? '/' : `/${page.slug}`
+    const url = pageUrlFor(page.slug)
     const previousItem = existingNav.find((item: any) => item.url === url)
     return {
       label: page.title,
@@ -126,28 +145,31 @@ async function syncNavToHeader(payload: any) {
 // these changes — content/layout edits should not rebuild the whole nav.
 const NAV_RELEVANT_FIELDS = ['title', 'slug', 'status', 'showInNav', 'navOrder'] as const
 
-export const syncNavAfterChange: CollectionAfterChangeHook = async ({
+// Run the sync WITHOUT blocking the save response. It kicks off just after the
+// document's transaction commits, so it reliably sees the change, while the
+// admin "Save" returns immediately instead of waiting for the nav rebuild.
+function scheduleNavSync(payload: any) {
+  setTimeout(() => {
+    syncNavToHeader(payload).catch((err) => {
+      payload.logger.error(`Failed to sync nav: ${err}`)
+    })
+  }, 0)
+}
+
+export const syncNavAfterChange: CollectionAfterChangeHook = ({
   req,
   doc,
   previousDoc,
   operation,
 }) => {
-  try {
-    // Always sync on create; on update only when a nav-relevant field changed.
-    if (operation === 'update' && previousDoc) {
-      const changed = NAV_RELEVANT_FIELDS.some((field) => doc?.[field] !== previousDoc?.[field])
-      if (!changed) return
-    }
-    await syncNavToHeader(req.payload)
-  } catch (err) {
-    req.payload.logger.error(`Failed to sync nav after change: ${err}`)
+  // Always sync on create; on update only when a nav-relevant field changed.
+  if (operation === 'update' && previousDoc) {
+    const changed = NAV_RELEVANT_FIELDS.some((field) => doc?.[field] !== previousDoc?.[field])
+    if (!changed) return
   }
+  scheduleNavSync(req.payload)
 }
 
-export const syncNavAfterDelete: CollectionAfterDeleteHook = async ({ req }) => {
-  try {
-    await syncNavToHeader(req.payload)
-  } catch (err) {
-    req.payload.logger.error(`Failed to sync nav after delete: ${err}`)
-  }
+export const syncNavAfterDelete: CollectionAfterDeleteHook = ({ req }) => {
+  scheduleNavSync(req.payload)
 }

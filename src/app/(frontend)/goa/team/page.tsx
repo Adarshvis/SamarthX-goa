@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import config from '@/payload.config'
 import { getPayload } from '@/lib/payload'
-import PageBanner from '../components/PageBanner'
-import BlockRenderer from '../components/BlockRenderer'
+import PageBanner from '../../components/PageBanner'
+import BlockRenderer from '../../components/BlockRenderer'
 
 async function getTeamPage() {
   const payload = await getPayload({ config })

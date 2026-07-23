@@ -47,8 +47,14 @@ export const Pages: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data }) => {
-        if (data && data.title && !data.slug) {
-          data.slug = data.title
+        if (!data) return data
+        // Use the typed slug if present, otherwise derive from the title.
+        const source =
+          typeof data.slug === 'string' && data.slug.trim() ? data.slug : data.title
+        if (source) {
+          // Always normalise: strip leading/trailing slashes, spaces, capitals,
+          // and any non url-safe characters (e.g. "/demo-test" -> "demo-test").
+          data.slug = source
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '')

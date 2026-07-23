@@ -80,7 +80,7 @@ export default function TeamGridBlock({
         <div className={`grid gap-6 ${gridClasses[cols]}`}>
           {members.map((member, i) => {
             const photoUrl = typeof member.photo === 'object' && member.photo?.url ? member.photo.url : null
-            const href = member.profileLink || `/team/${member.slug || slugify(member.name)}`
+            const href = member.profileLink || `/goa/team/${member.slug || slugify(member.name)}`
             const social = showSocialLinks !== false ? member.socialLinks || [] : []
 
             return (

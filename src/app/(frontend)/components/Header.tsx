@@ -188,7 +188,7 @@ export default function Header({ data }: HeaderProps) {
                     const active = hasChildren
                       ? item.children?.some((child) => {
                           const slug = child.page?.slug
-                          return isActive(slug === 'home' ? '/' : `/${slug}`)
+                          return isActive(slug === 'home' ? '/' : `/goa/${slug}`)
                         }) || false
                       : isActive(item.url)
 
@@ -245,7 +245,7 @@ export default function Header({ data }: HeaderProps) {
                               <div className="absolute top-full left-0 mt-0 bg-white rounded-b-lg shadow-lg border border-gray-200 py-1 min-w-[200px] hidden group-hover:block z-50">
                                 {item.children.map((child) => {
                                   const childSlug = child.page?.slug
-                                  const childUrl = childSlug === 'home' ? '/' : `/${childSlug}`
+                                  const childUrl = childSlug === 'home' ? '/' : `/goa/${childSlug}`
                                   const childLabel = child.label || child.page?.title || ''
                                   const childActive = isActive(childUrl)
                                   return (
@@ -346,7 +346,7 @@ export default function Header({ data }: HeaderProps) {
                 const active = hasChildren
                   ? item.children?.some((child) => {
                       const slug = child.page?.slug
-                      return isActive(slug === 'home' ? '/' : `/${slug}`)
+                      return isActive(slug === 'home' ? '/' : `/goa/${slug}`)
                     }) || false
                   : isActive(item.url)
 
@@ -370,7 +370,7 @@ export default function Header({ data }: HeaderProps) {
                       }`}>{item.label}</div>
                       {item.children?.map((child) => {
                         const childSlug = child.page?.slug
-                        const childUrl = childSlug === 'home' ? '/' : `/${childSlug}`
+                        const childUrl = childSlug === 'home' ? '/' : `/goa/${childSlug}`
                         const childLabel = child.label || child.page?.title || ''
                         return (
                           <a
