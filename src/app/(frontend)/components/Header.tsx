@@ -112,7 +112,7 @@ export default function Header({ data }: HeaderProps) {
       : navAlignment === 'right'
         ? 'justify-end'
         : 'justify-center'
-  const innerSurfaceClass = 'header-main-surface max-w-7xl mx-auto px-4 sm:px-6 h-[128px] flex items-start justify-between gap-4 pt-3 border-b border-gray-200'
+  const innerSurfaceClass = 'header-main-surface max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 py-3 md:h-[128px] md:items-start md:py-0 md:pt-3 border-b border-gray-200'
   const mobileSearchClass = 'header-mobile-search md:hidden border-t border-gray-200 px-4 py-3'
 
   return (
@@ -132,7 +132,7 @@ export default function Header({ data }: HeaderProps) {
       <div className="bg-white">
         <div className={innerSurfaceClass}>
           {/* Left Logo */}
-          <div className="shrink-0 self-start">
+          <div className="shrink-0 md:self-start">
             {leftImg?.url ? (
               <a href={data.leftLogo?.url || '/'} className="block">
                 <Image
@@ -284,7 +284,7 @@ export default function Header({ data }: HeaderProps) {
           </div>
 
           {/* Right: Search Bar + Mobile Toggle */}
-          <div className="shrink-0 self-start md:mt-2 flex items-center gap-3">
+          <div className="shrink-0 flex items-center gap-3 md:self-start md:mt-2">
             {data.searchBar?.enabled && (
               <>
                 {/* Desktop search */}
@@ -315,6 +315,35 @@ export default function Header({ data }: HeaderProps) {
             </button>
           </div>
         </div>
+
+        {/* Mobile center logo (DHE / ministry) */}
+        {hasCenterLogoContent && (
+          <div className="md:hidden flex flex-col items-center justify-center border-t border-gray-100 px-4 py-3 text-center">
+            <a
+              href={data.centerLogo?.url || '/'}
+              className="inline-flex flex-col items-center justify-center"
+            >
+              {centerImg?.url && (
+                <Image
+                  src={centerImg.url}
+                  alt={centerImg.alt || data.centerLogo?.title || 'Center Logo'}
+                  width={centerMaxWidth}
+                  height={centerRenderHeight}
+                  quality={100}
+                  sizes={`${centerMaxWidth}px`}
+                  style={{ height: '44px', width: 'auto' }}
+                  className="object-contain"
+                />
+              )}
+              {data.centerLogo?.title && (
+                <span className="mt-1 text-sm font-semibold text-gray-900">{data.centerLogo.title}</span>
+              )}
+              {data.centerLogo?.subtitle && (
+                <span className="text-xs text-gray-600">{data.centerLogo.subtitle}</span>
+              )}
+            </a>
+          </div>
+        )}
 
         {/* Mobile search bar (expanded) */}
         {searchOpen && data.searchBar?.enabled && (

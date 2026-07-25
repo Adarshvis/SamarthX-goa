@@ -864,7 +864,7 @@ function FloatingStatCard({
   const pos = floatingPositionClasses[card.position || 'topLeft']
   return (
     <div
-      className={`absolute ${pos} z-20 flex animate-float items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_32px_rgba(15,23,42,0.1)]`}
+      className={`absolute ${pos} z-20 hidden animate-float items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_32px_rgba(15,23,42,0.1)] sm:flex`}
     >
       <div>
         <p className="text-[12px] font-medium text-slate-500">{card.label}</p>
@@ -895,9 +895,9 @@ function SplitShowcaseHero({ showcase }: { showcase?: ShowcaseData }) {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#eef4fd] via-[#f2f7fd] to-[#f8fbfe]">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 pt-14 pb-20 lg:grid-cols-2 lg:px-12">
-        {/* Left */}
-        <div className="animate-fade-up">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 px-6 pt-10 pb-14 md:pt-14 md:pb-20 lg:grid-cols-2 lg:items-center lg:gap-x-12 lg:gap-y-0 lg:px-12">
+        {/* Text — order 1 on mobile, top of the left column on desktop */}
+        <div className="order-1 animate-fade-up lg:col-start-1 lg:row-start-1 lg:self-end">
           {eyebrow?.enabled !== false && (eyebrow?.text || eyebrow?.icon) && (
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
               {eyebrow?.icon ? <DynamicIcon name={eyebrow.icon} size={16} className="text-[#2563eb]" /> : null}
@@ -916,50 +916,13 @@ function SplitShowcaseHero({ showcase }: { showcase?: ShowcaseData }) {
               <RichText data={showcase.subtitle} />
             </div>
           )}
-
-          {buttons.length > 0 && (
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              {buttons.map((btn) => (
-                <a
-                  key={btn.id || btn.url}
-                  href={btn.url}
-                  target={btn.openInNewTab ? '_blank' : undefined}
-                  rel={btn.openInNewTab ? 'noopener noreferrer' : undefined}
-                  className={`group inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold transition-colors duration-200 ${showcaseBtnVariants[btn.variant || 'primary']}`}
-                >
-                  {btn.label}
-                  {btn.icon ? (
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">
-                      <DynamicIcon name={btn.icon} size={16} />
-                    </span>
-                  ) : null}
-                </a>
-              ))}
-            </div>
-          )}
-
-          {trustBadges.length > 0 && (
-            <div className="mt-10 flex flex-wrap gap-3">
-              {trustBadges.map((badge, i) => {
-                const theme = showcaseThemeMap[(badge.colorTheme as ColorTheme) || 'blue']
-                return (
-                  <div
-                    key={badge.id || i}
-                    className="flex items-center gap-2 rounded-full border border-slate-100 bg-white/90 py-1.5 pl-1.5 pr-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
-                  >
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-full ${theme.circle} ${theme.icon}`}>
-                      {badge.icon ? <DynamicIcon name={badge.icon} size={16} /> : null}
-                    </span>
-                    <span className="text-[12.5px] font-semibold text-[#0f172a]">{badge.label}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
         </div>
 
-        {/* Right */}
-        <div className="relative animate-fade-up" style={{ animationDelay: '0.15s' }}>
+        {/* Visual — order 2 on mobile (between text and buttons), right column on desktop */}
+        <div
+          className="relative order-2 animate-fade-up lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:self-center"
+          style={{ animationDelay: '0.15s' }}
+        >
           {visualType === 'mediaSlider' && visualSlides.length > 0 ? (
             <ShowcaseMediaSliderView slides={visualSlides} settings={showcase.sliderSettings} />
           ) : (
@@ -977,6 +940,51 @@ function SplitShowcaseHero({ showcase }: { showcase?: ShowcaseData }) {
           {floatingEnabled &&
             floatingCards.map((card, i) => <FloatingStatCard key={card.id || i} card={card} />)}
         </div>
+
+        {/* Actions — order 3 on mobile (after the media), bottom of the left column on desktop */}
+        {(buttons.length > 0 || trustBadges.length > 0) && (
+          <div className="order-3 animate-fade-up lg:col-start-1 lg:row-start-2 lg:self-start">
+            {buttons.length > 0 && (
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+                {buttons.map((btn) => (
+                  <a
+                    key={btn.id || btn.url}
+                    href={btn.url}
+                    target={btn.openInNewTab ? '_blank' : undefined}
+                    rel={btn.openInNewTab ? 'noopener noreferrer' : undefined}
+                    className={`group inline-flex w-full items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-semibold transition-colors duration-200 sm:w-auto sm:justify-start ${showcaseBtnVariants[btn.variant || 'primary']}`}
+                  >
+                    {btn.label}
+                    {btn.icon ? (
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        <DynamicIcon name={btn.icon} size={16} />
+                      </span>
+                    ) : null}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {trustBadges.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-3">
+                {trustBadges.map((badge, i) => {
+                  const theme = showcaseThemeMap[(badge.colorTheme as ColorTheme) || 'blue']
+                  return (
+                    <div
+                      key={badge.id || i}
+                      className="flex items-center gap-2 rounded-full border border-slate-100 bg-white/90 py-1.5 pl-1.5 pr-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    >
+                      <span className={`flex h-8 w-8 items-center justify-center rounded-full ${theme.circle} ${theme.icon}`}>
+                        {badge.icon ? <DynamicIcon name={badge.icon} size={16} /> : null}
+                      </span>
+                      <span className="text-[12.5px] font-semibold text-[#0f172a]">{badge.label}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   )
