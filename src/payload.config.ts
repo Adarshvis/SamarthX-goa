@@ -86,6 +86,11 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: databaseUrl,
+      ssl: {
+        ca: process.env.DB_SSL_CA,
+        // Env vars are strings; pg expects a boolean here
+        rejectUnauthorized: process.env.DB_SSL_FLAG !== 'false',
+      },
     },
     push: false,
   }),
